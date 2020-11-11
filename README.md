@@ -1,1 +1,1 @@
-# index-shiny-app
+# covid19-vulnerability-shiny-app

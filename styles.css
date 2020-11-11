@@ -1,0 +1,63 @@
+body, label, input, button, select { 
+  font-family: 'HelveticaNeue', Arial, Verdana, sans-serif;
+  font-weight: 200;
+}
+h1, h2, h3, h4 { font-weight: 400; }
+
+.outer {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+#legend {
+  /* Appearance */
+  opacity:.8;
+  background-color: transparent;
+  border-style: none;
+  box-shadow: 0 0;
+  transition: transform .2s;
+  transform-origin: left bottom;
+}
+
+#legend:hover {
+  transform: scale(2);
+  transform-origin: left bottom;
+}
+
+#click-area {
+  /* Appearance */
+  opacity:.8;
+  background-color: transparent;
+  border-style: none;
+  box-shadow: 0 0;
+}
+
+#controls {
+  /* Appearance */
+  background-color: white;
+  padding: 20px 20px 0 20px;
+  cursor: move;
+  /* Fade out while not hovering */
+  opacity: 0.7;
+  zoom: 0.9;
+  transition: opacity 50ms 50ms;
+}
+
+#controls:hover {
+  /* Fade in while hovering */
+  opacity: 0.95;
+  transition-delay: 0;
+}
+
+#data-table-row {
+  padding: 20px 20px 20px 20px;
+}
+
+#data-info {
+  padding:20px 20px 5px 20px;
+}
