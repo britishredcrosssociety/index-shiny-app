@@ -31,6 +31,8 @@ ri_shp <- lad_shp %>%
 
 labels <- read_rds("data/la-labels.rds")  # Local Authority labels for map
 
+la_centroids <- read_feather("data/la-centroids.feather")
+
 # # ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
 body_colwise <- dashboardBody(
@@ -235,14 +237,25 @@ server <- function(input, output) {
     }
   })
   
+  # Track which polygon the user clicked on
+  clicked_polygon <- reactive({
+    # Set default to NULL
+    if (is.null(input$map_shape_click$id)) {
+      return(NULL)
+    }
+    input$map_shape_click$id
+  })
+  
+  # ---- Observer for updating map ----
   observe({
     # Debug
     # print(input$sidebarItemExpanded)
     # print(input$shocks)
-    print(nrow(filteredLAs()))
+    # print(nrow(filteredLAs()))
+    print(clicked_polygon())
     
-    leafletProxy("map") %>%
-      clearShapes() %>%
+    map <- leafletProxy("map") %>%
+      clearShapes() %>% 
       
       # Show filtered Local Authorities
       addPolygons(
@@ -271,6 +284,18 @@ server <- function(input, output) {
           direction = "auto"
         )
       )
+    
+    # If user clicks a Local Authority, zoom to it
+    if (!is.null(clicked_polygon())) {
+      # Get centroid
+      curr_centroid <- la_centroids %>% 
+        filter(lad19cd == clicked_polygon())
+      
+      map <- map %>% 
+        setView(lng = curr_centroid$lng, lat = curr_centroid$lat, zoom = 10)
+    }
+    
+    map
   })
   
   

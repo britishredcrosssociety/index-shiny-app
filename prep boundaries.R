@@ -4,17 +4,30 @@
 library(tidyverse)
 library(sf)
 
+# ---- LAs ----
 # Local Authority Districts (December 2019) Boundaries UK BUC
 # Source: https://geoportal.statistics.gov.uk/datasets/local-authority-districts-december-2019-boundaries-uk-buc
 lad_shp <- read_sf("https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson")
 
 # Save a shapefile that we'll join onto later
-lad_shp %>% 
+lad_shp <- lad_shp %>% 
   filter(str_sub(lad19cd, 1, 1) == "E") %>%  # England only for now
   
   st_transform(crs = 4326) %>% 
-  select(lad19cd, lad19nm) %>% 
-  write_sf("data/lad.shp")
+  select(lad19cd, lad19nm)
+
+lad_shp %>% write_sf("data/lad.shp")
+
+# Calculate and save centroids
+lad_shp %>% 
+  st_centroid() %>% 
+  st_coordinates() %>% 
+  as_tibble() %>% 
+  
+  mutate(lad19cd = lad_shp$lad19cd) %>% 
+  select(lad19cd, lng = X, lat = Y) %>% 
+  
+  write_feather("data/la-centroids.feather")
 
 # ---- MSOAs ----
 # Middle Layer Super Output Areas (December 2011) EW BSC V2
