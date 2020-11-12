@@ -109,11 +109,21 @@ ui <- function(request) {
         id = "sidebar",
         menuItem("Disasters and Emergencies",
                  tabName = "shocks_tab", icon = icon("building"), startExpanded = TRUE,
+                 
                  selectInput("shocks",
                              label = "Filter areas by disaster",
-                             choices = c("None", "Flood risk", "Historical flooding", "Dwelling fires"),
+                             choices = c("None", "Floods", "Dwelling fires"),
                              selected = "None",
-                             multiple = TRUE
+                             multiple = FALSE
+                             ),
+                 
+                 conditionalPanel(
+                   condition = "input.shocks == 'Floods'",
+                 
+                   checkboxInput("flood_incidents",
+                                 label = "Include historical flooding",
+                                 value = FALSE
+                                 )
                  )
         ),
         
