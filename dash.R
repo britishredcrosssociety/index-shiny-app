@@ -620,10 +620,10 @@ server <- function(input, output, session) {
       str_stats = c(str_stats, paste0("Loneliness score: ", round(vi_curr$Loneliness, 2), "<br/>(England average: ", round(mean(vi$Loneliness, na.rm = TRUE), 2), ")"))
     
     if (!is.na(vi_curr$`Frailty rank`))
-      str_stats = c(str_stats, paste0("Frailty rank: ", round(vi_curr$`Frailty rank`, 2), "<br/>(England average: ", round(mean(vi$`Frailty rank`, na.rm = TRUE), 2), ")"))
+      str_stats = c(str_stats, paste0("Frailty (rank out of ", max(vi$`Frailty rank`), "): ", round(vi_curr$`Frailty rank`, 2)))
     
     if (!is.na(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`))
-      str_stats = c(str_stats, paste0("Percentage of adresses with private outdoor space (rank out of ", max(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`), "): ", round(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`, 2)))
+      str_stats = c(str_stats, paste0("Percentage of adresses with private outdoor space (rank out of ", max(vi$`Percentage of adresses with private outdoor space (reverse ranked)`), "): ", round(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`, 2)))
     
     if (!is.na(vi_curr$`Average distance to nearest Park, Public Garden, or Playing Field (m)`))
       str_stats = c(str_stats, paste0("Average distance to green spaces: ", round(vi_curr$`Average distance to nearest Park, Public Garden, or Playing Field (m)`, 2), "m<br/>(England average: ", round(mean(vi$`Average distance to nearest Park, Public Garden, or Playing Field (m)`, na.rm = TRUE), 2), "m)"))
