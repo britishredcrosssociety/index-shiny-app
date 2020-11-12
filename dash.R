@@ -243,7 +243,7 @@ ui <- function(request) {
         title = "Health/Wellbeing Vulnerability",
         icon = "stethoscope",
         
-        textInput("caption", "Caption", "Data Summary")
+        uiOutput("vi_wellbeing")
       ),
       
       rightSidebarTabContent(
@@ -537,7 +537,8 @@ server <- function(input, output, session) {
   )
   
   # ---- Vulnerability Index underlying indicators ----
-  output$vi_clinical = renderUI({  # render as HTML
+  # Clinical vulnerability
+  output$vi_clinical = renderUI({
     if (is.null(selected_msoa()))
       return("Select a Local Authority then click a neighbourhood to see the underlying indicators.")
     
@@ -592,6 +593,41 @@ server <- function(input, output, session) {
     if (!is.na(vi_curr$`Proportion people over 70`))
       str_stats = c(str_stats, paste0("Proportion of people over 70: ", round(vi_curr$`Proportion people over 70`, 2), "<br/>(England average: ", round(mean(vi$`Proportion people over 70`, na.rm = TRUE), 2), ")"))
     
+    HTML(paste(str_stats, collapse = "<br/><br/>"))
+  })
+  
+  # Health/wellbeing vulnerability
+  output$vi_wellbeing = renderUI({
+    if (is.null(selected_msoa()))
+      return("Select a Local Authority then click a neighbourhood to see the underlying indicators.")
+    
+    # Get vulnerable MSOAs for current LA
+    vi_curr <- vi %>% 
+      filter(Code == selected_msoa())
+    
+    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    
+    if (!is.na(vi_curr$`Dementia prevalence Rate`))
+      str_stats = c(str_stats, paste0("Dementia prevalence: ", round(vi_curr$`Dementia prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Dementia prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Learning Disabilities prevalence Rate`))
+      str_stats = c(str_stats, paste0("Learning Disabilities prevalence: ", round(vi_curr$`Learning Disabilities prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Learning Disabilities prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Serious Mental Illness prevalence Rate`))
+      str_stats = c(str_stats, paste0("Serious Mental Illness prevalence: ", round(vi_curr$`Serious Mental Illness prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Serious Mental Illness prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$Loneliness))
+      str_stats = c(str_stats, paste0("Loneliness score: ", round(vi_curr$Loneliness, 2), "<br/>(England average: ", round(mean(vi$Loneliness, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Frailty rank`))
+      str_stats = c(str_stats, paste0("Frailty rank: ", round(vi_curr$`Frailty rank`, 2), "<br/>(England average: ", round(mean(vi$`Frailty rank`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`))
+      str_stats = c(str_stats, paste0("Percentage of adresses with private outdoor space (rank out of ", max(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`), "): ", round(vi_curr$`Percentage of adresses with private outdoor space (reverse ranked)`, 2)))
+    
+    if (!is.na(vi_curr$`Average distance to nearest Park, Public Garden, or Playing Field (m)`))
+      str_stats = c(str_stats, paste0("Average distance to green spaces: ", round(vi_curr$`Average distance to nearest Park, Public Garden, or Playing Field (m)`, 2), "m<br/>(England average: ", round(mean(vi$`Average distance to nearest Park, Public Garden, or Playing Field (m)`, na.rm = TRUE), 2), "m)"))
+
     HTML(paste(str_stats, collapse = "<br/><br/>"))
   })
 
