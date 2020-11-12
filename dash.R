@@ -13,6 +13,7 @@ library(scales)
 library(shinydashboard)
 library(shinyWidgets)
 library(htmltools)
+library(DT)
 # for plots
 library(echarts4r)
 # Custom error messages and loading screens
@@ -86,7 +87,41 @@ body_colwise <- dashboardBody(
         tabPanel("Data", 
                  icon = icon(name = "table"),
                  
-                 "Data tab")
+                 fluidRow(
+                   id = "data-info",
+                   p(
+                     "Explore English local authority vulnerability and capacity scores in the table below.
+                     Scores are given as ranks, quintiles and deciles - in all cases, higher numbers mean", 
+                     tags$b("higher"), " vulnerability and a ", tags$b("lower"),
+                     " capacity. To learn more about the British Red Cross Vulnerability Index and how these scores are calculated,",
+                     tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability/", "click here.")
+                   ),
+                   hr()
+                 ),
+                 
+                 fluidRow(
+                   id = "data-infographic-row",
+                   img(
+                     src = "data-info-download.png",
+                     height = 90,
+                     style = "margin-left:30px;margin-bottom:-8px;"
+                   ),
+                   img(
+                     src = "data-info-hide-cols.png",
+                     height = 90,
+                     style = "margin-left:20px;margin-bottom:-15px;"
+                   ),
+                   img(
+                     src = "data-info-find.png",
+                     height = 90,
+                     style = "position:absolute;top:180px;right:0;margin-right:50px;"
+                   )
+                 ),
+                 fluidRow(
+                   id = "data-table-row",
+                   DTOutput("data")
+                 )
+        )
       )
     )
   ) # fluidRow
@@ -438,6 +473,19 @@ server <- function(input, output, session) {
     map
   })
   
+  # - Data -
+  output$data <- renderDT(
+    datatable(ri,
+              rownames = FALSE,
+              escape = FALSE,
+              extensions = c("Buttons", "ColReorder"),
+              options = list(
+                dom = "Bfrtip",
+                buttons = c("csv", "excel", "colvis"),
+                colReorder = TRUE
+              )
+    )
+  )
   
   # - Error messages -
   sever()
