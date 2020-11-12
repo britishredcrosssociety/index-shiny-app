@@ -11,6 +11,7 @@ library(sf)
 library(leaflet)
 library(scales)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(shinyWidgets)
 library(htmltools)
 library(DT)
@@ -128,12 +129,17 @@ body_colwise <- dashboardBody(
 ) # dashboardBody
 
 ui <- function(request) {
-  dashboardPage(
-    header = dashboardHeader(
+  dashboardPagePlus(
+    header = dashboardHeaderPlus(
       title = "British Red Cross Vulnerability Index", titleWidth = "350px",
       # to add in bookmark button
-      tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px")
+      tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px"),
+      
+      enable_rightsidebar = TRUE,
+      rightSidebarIcon = "chart-pie"
     ),
+    
+    # - Main, left-hand sidebar -
     sidebar = dashboardSidebar(
       width = "300px",
       
@@ -217,6 +223,46 @@ ui <- function(request) {
         ),
         style = "position:fixed; bottom:0; padding:10px; text-align: center;")
     ),
+    
+    # - Right-hand sidebar showing VI underlying indicators -
+    rightsidebar = rightSidebar(
+      # background = "dark",
+      rightSidebarTabContent(
+        id = 1,
+        title = "Clinical Vulnerability",
+        icon = "virus",
+        
+        active = TRUE,
+        fluidRow(
+          uiOutput("vi_clinical")
+        )
+      ),
+      
+      rightSidebarTabContent(
+        id = 2,
+        title = "Health/Wellbeing Vulnerability",
+        icon = "stethoscope",
+        
+        textInput("caption", "Caption", "Data Summary")
+      ),
+      
+      rightSidebarTabContent(
+        id = 3,
+        title = "Economic Vulnerability",
+        icon = "pound-sign",
+        
+        numericInput("obs", "Observations:", 10, min = 1, max = 100)
+      ),
+      
+      rightSidebarTabContent(
+        id = 4,
+        title = "Social Vulnerability",
+        icon = "users",
+        
+        numericInput("obs", "Observations:", 10, min = 1, max = 100)
+      )
+    ),
+    
     body_colwise
   )
 }
@@ -225,7 +271,8 @@ ui <- function(request) {
 server <- function(input, output, session) {
   vi_pal <- colorFactor("viridis", c(1:10), reverse = TRUE)
   
-  curr_polygon <- reactiveVal()  # track which LA the user clicked on
+  selected_polygon <- reactiveVal()  # track which LA the user clicked on
+  selected_msoa <- reactiveVal()  # track if user clicked an MSOA
   
   # ---- Draw basemap ----
   # set up the static parts of the map (that don't change as user selects different options)
@@ -317,14 +364,15 @@ server <- function(input, output, session) {
   observeEvent(input$map_shape_click, {
     
     if (is.null(input$map_shape_click$id)) {
-      curr_polygon(NULL)
+      selected_polygon(NULL)
       
     } else if (str_detect(input$map_shape_click$id, "^E02")) {
       # User selected an MSOA - do nothing
-      return()
+      # return()
+      selected_msoa(input$map_shape_click$id)
     
     } else {
-      curr_polygon(input$map_shape_click$id)
+      selected_polygon(input$map_shape_click$id)
       
       # Get name from selected LA code
       curr_lad <- lad_shp$lad19nm[ lad_shp$lad19cd == input$map_shape_click$id ]
@@ -353,22 +401,22 @@ server <- function(input, output, session) {
     # print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
-    # print(curr_polygon())
+    # print(selected_polygon())
     # print(input$map_shape_click$id)
     
-    # curr_polygon(clicked_polygon())  # Did user click a polygon on the map?
+    # selected_polygon(clicked_polygon())  # Did user click a polygon on the map?
     
     # - Filter based on user-selected LAs from list -
     if (input$lad == "All") {
       # Deselect LAs
-      curr_polygon(NULL)
+      selected_polygon(NULL)
       
     } else {
       # update map zoom
-      curr_polygon(lad_shp$lad19cd[ lad_shp$lad19nm == input$lad ])
+      selected_polygon(lad_shp$lad19cd[ lad_shp$lad19nm == input$lad ])
     }
     
-    # print(curr_polygon())
+    # print(selected_polygon())
     
     # Get selected set of LAs
     curr_LAs <- filteredLAs()
@@ -417,14 +465,14 @@ server <- function(input, output, session) {
       )
     
     # If user clicks a Local Authority, zoom to it and show vulnerable MSOAs
-    if (!is.null(curr_polygon())) {
+    if (!is.null(selected_polygon())) {
       # Get LA centroid for zooming
       curr_centroid <- la_centroids %>% 
-        filter(lad19cd == curr_polygon())
+        filter(lad19cd == selected_polygon())
       
       # Get vulnerable MSOAs for current LA
       vi_curr <- vi_shp %>% 
-        filter(LAD19CD == curr_polygon())
+        filter(LAD19CD == selected_polygon())
       
       # Get bounding box of current LA
       curr_bbox <- st_bbox(vi_curr)
@@ -488,6 +536,65 @@ server <- function(input, output, session) {
     )
   )
   
+  # ---- Vulnerability Index underlying indicators ----
+  output$vi_clinical = renderUI({  # render as HTML
+    if (is.null(selected_msoa()))
+      return("Select a Local Authority then click a neighbourhood to see the underlying indicators.")
+    
+    # str_stats = c()  # the string to build in this function
+
+    # Get vulnerable MSOAs for current LA
+    vi_curr <- vi %>% 
+      # filter(Code == "E02000001")
+      filter(Code == selected_msoa())
+    
+    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+
+    if (!is.na(vi_curr$`Modelled prevalence of people aged 15 who are regular smokers Rate`))
+        str_stats = c(str_stats, paste0("Smoking prevalence: ", round(vi_curr$`Modelled prevalence of people aged 15 who are regular smokers Rate`, 2), "<br/>(England average: ", round(mean(vi$`Modelled prevalence of people aged 15 who are regular smokers Rate`, na.rm = TRUE), 2), ")"))
+
+    if (!is.na(vi_curr$`Obesity prevalence Rate`))
+        str_stats = c(str_stats, paste0("Obesity prevalence: ", round(vi_curr$`Obesity prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Obesity prevalence Rate`, na.rm = TRUE), 2), ")"))
+
+    if (!is.na(vi_curr$`Cancer prevalence Rate`))
+        str_stats = c(str_stats, paste0("Cancer prevalence: ", round(vi_curr$`Cancer prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Cancer prevalence Rate`, na.rm = TRUE), 2), ")"))
+
+    if (!is.na(vi_curr$`Asthma prevalence Rate`))
+        str_stats = c(str_stats, paste0("Asthma prevalence: ", round(vi_curr$`Asthma prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Asthma prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Atrial Fibrillation prevalence Rate`))
+      str_stats = c(str_stats, paste0("Atrial Fibrillation prevalence: ", round(vi_curr$`Atrial Fibrillation prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Atrial Fibrillation prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Cardiovascular Disease prevalence Rate`))
+      str_stats = c(str_stats, paste0("Cardiovascular Disease prevalence: ", round(vi_curr$`Cardiovascular Disease prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Cardiovascular Disease prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`COPD prevalence Rate`))
+      str_stats = c(str_stats, paste0("COPD prevalence: ", round(vi_curr$`COPD prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`COPD prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Diabetes prevalence Rate`))
+      str_stats = c(str_stats, paste0("Diabetes prevalence: ", round(vi_curr$`Diabetes prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Diabetes prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Coronary Heart Disease prevalence Rate`))
+      str_stats = c(str_stats, paste0("Coronary Heart Disease prevalence: ", round(vi_curr$`Coronary Heart Disease prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Coronary Heart Disease prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Heart Failure prevalence Rate`))
+      str_stats = c(str_stats, paste0("Heart Failure prevalence: ", round(vi_curr$`Heart Failure prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Heart Failure prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`High Blood Pressure prevalence Rate`))
+      str_stats = c(str_stats, paste0("High Blood Pressure prevalence: ", round(vi_curr$`High Blood Pressure prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`High Blood Pressure prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Chronic Kidney Disease prevalence Rate`))
+      str_stats = c(str_stats, paste0("Chronic Kidney Disease prevalence: ", round(vi_curr$`Chronic Kidney Disease prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Chronic Kidney Disease prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Peripheral Arterial Disease prevalence Rate`))
+      str_stats = c(str_stats, paste0("Peripheral Arterial Disease prevalence: ", round(vi_curr$`Peripheral Arterial Disease prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Peripheral Arterial Disease prevalence Rate`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Proportion people over 70`))
+      str_stats = c(str_stats, paste0("Proportion of people over 70: ", round(vi_curr$`Proportion people over 70`, 2), "<br/>(England average: ", round(mean(vi$`Proportion people over 70`, na.rm = TRUE), 2), ")"))
+    
+    HTML(paste(str_stats, collapse = "<br/><br/>"))
+  })
+
   # - Error messages -
   sever()
   
