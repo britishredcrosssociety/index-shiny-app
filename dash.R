@@ -71,17 +71,22 @@ body_colwise <- dashboardBody(
         title = "Local Authority Vulnerability and Resilience",
         
         tabPanel("Map", 
-          leafletOutput("map", height = "890px"),
-          
-          absolutePanel(
-            id = "legend", class = "panel panel-default",
-            top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = FALSE,
-            draggable = FALSE, height = "auto",
-            img(src = "bivar-legend.png", width = 300)
-          )
+                 icon = icon(name = "map-marked-alt"),
+                 
+                 leafletOutput("map", height = "890px"),
+                 
+                 absolutePanel(
+                   id = "legend", class = "panel panel-default",
+                   top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = FALSE,
+                   draggable = FALSE, height = "auto",
+                   img(src = "bivar-legend.png", width = 300)
+                 )
         ),
         
-        tabPanel("Data", "Data tab")
+        tabPanel("Data", 
+                 icon = icon(name = "table"),
+                 
+                 "Data tab")
       )
     )
   ) # fluidRow
