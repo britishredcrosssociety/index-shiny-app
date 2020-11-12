@@ -259,7 +259,7 @@ ui <- function(request) {
         title = "Social Vulnerability",
         icon = "users",
         
-        numericInput("obs", "Observations:", 10, min = 1, max = 100)
+        uiOutput("vi_social")
       )
     ),
     
@@ -677,6 +677,53 @@ server <- function(input, output, session) {
     
     if (!is.na(vi_curr$`Financial Vulnerability score`))
       str_stats = c(str_stats, paste0("Financial Vulnerability score: ", round(vi_curr$`Financial Vulnerability score`, 2), "<br/>(England average: ", round(mean(vi$`Financial Vulnerability score`, na.rm = TRUE), 2), ")"))
+    
+    HTML(paste(str_stats, collapse = "<br/><br/>"))
+  })
+  
+  # Social vulnerability
+  output$vi_social = renderUI({
+    if (is.null(selected_msoa()))
+      return("Select a Local Authority then click a neighbourhood to see the underlying indicators.")
+    
+    # Get vulnerable MSOAs for current LA
+    vi_curr <- vi %>% 
+      filter(Code == selected_msoa())
+    
+    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    
+    if (!is.na(vi_curr$`Longest distance to supermarket (km)`))
+      str_stats = c(str_stats, paste0("Distance to supermarket: ", round(vi_curr$`Longest distance to supermarket (km)`, 2), "km<br/>(England average: ", round(mean(vi$`Longest distance to supermarket (km)`, na.rm = TRUE), 2), "km)"))
+
+    if (!is.na(vi_curr$`Longest distance to GP surgery (km)`))
+      str_stats = c(str_stats, paste0("Distance to GP surgery: ", round(vi_curr$`Longest distance to GP surgery (km)`, 2), "km<br/>(England average: ", round(mean(vi$`Longest distance to GP surgery (km)`, na.rm = TRUE), 2), "km)"))
+    
+    if (!is.na(vi_curr$`Longest distance to Post Office (km)`))
+      str_stats = c(str_stats, paste0("Distance to Post Office: ", round(vi_curr$`Longest distance to Post Office (km)`, 2), "km<br/>(England average: ", round(mean(vi$`Longest distance to Post Office (km)`, na.rm = TRUE), 2), "km)"))
+    
+    if (!is.na(vi_curr$`Longest distance to hospital (km)`))
+      str_stats = c(str_stats, paste0("Distance to hospital: ", round(vi_curr$`Longest distance to hospital (km)`, 2), "km<br/>(England average: ", round(mean(vi$`Longest distance to hospital (km)`, na.rm = TRUE), 2), "km)"))
+    
+    if (!is.na(vi_curr$`Longest distance to food bank (km)`))
+      str_stats = c(str_stats, paste0("Distance to food bank: ", round(vi_curr$`Longest distance to food bank (km)`, 2), "km<br/>(England average: ", round(mean(vi$`Longest distance to food bank (km)`, na.rm = TRUE), 2), "km)"))
+    
+    if (!is.na(vi_curr$`Household overcrowding`))
+      str_stats = c(str_stats, paste0("Household overcrowding: ", round(vi_curr$`Household overcrowding`, 2), "<br/>(England average: ", round(mean(vi$`Household overcrowding`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$Homelessness))
+      str_stats = c(str_stats, paste0("Homelessness rate: ", round(vi_curr$Homelessness, 2), "<br/>(England average: ", round(mean(vi$Homelessness, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Housing in poor condition`))
+      str_stats = c(str_stats, paste0("Housing in poor condition: ", round(vi_curr$`Housing in poor condition`, 2), "<br/>(England average: ", round(mean(vi$`Housing in poor condition`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Houses without central heating`))
+      str_stats = c(str_stats, paste0("Houses without central heating: ", round(vi_curr$`Houses without central heating`, 2), "<br/>(England average: ", round(mean(vi$`Houses without central heating`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Air quality`))
+      str_stats = c(str_stats, paste0("Air quality: ", round(vi_curr$`Air quality`, 2), "<br/>(England average: ", round(mean(vi$`Air quality`, na.rm = TRUE), 2), ")"))
+    
+    if (!is.na(vi_curr$`Digital Vulnerability rank`))
+      str_stats = c(str_stats, paste0("Digital Vulnerability (rank out of ", max(vi$`Digital Vulnerability rank`), "): ", round(vi_curr$`Digital Vulnerability rank`, 2)))
     
     HTML(paste(str_stats, collapse = "<br/><br/>"))
   })
