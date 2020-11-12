@@ -86,3 +86,15 @@ ggsave(filename = "www/bivar-legend-void.jpg",
 
 # ---- Prep RI ----
 write_feather(ri_bivariate, "data/resilience-index.feather")
+
+# Create labels for map
+labels <-
+  paste0(
+    sprintf("<strong>%s</strong><br/>", ri_bivariate$LAD19NM),
+    "Vulnerability quintile: ", ri_bivariate$`Vulnerability quintile`, "<br/>",
+    "Resilience quintile: ", ri_bivariate$`Capacity quintile`
+  ) %>%
+  lapply(htmltools::HTML)
+
+# write_feather(labels, "data/la-labels.feather")
+write_rds(labels, "data/la-labels.rds")

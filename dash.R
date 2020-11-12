@@ -29,14 +29,7 @@ lad_shp <- read_sf("data/lad.shp")
 ri_shp <- lad_shp %>% 
   left_join(ri, by = c("lad19cd" = "LAD19CD"))
 
-# ---- Prep data ----
-labels <-
-  paste0(
-    sprintf("<strong>%s</strong><br/>", ri_shp$lad19nm),
-    "Vulnerability quintile: ", ri_shp$`Vulnerability quintile`, "<br/>",
-    "Resilience quintile: ", ri_shp$`Capacity quintile`
-  ) %>%
-  lapply(htmltools::HTML)
+labels <- read_rds("data/la-labels.rds")  # Local Authority labels for map
 
 # # ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
