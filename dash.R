@@ -119,9 +119,14 @@ ui <- function(request) {
                  
                  conditionalPanel(
                    condition = "input.shocks == 'Floods'",
+                   
+                   checkboxInput("highest_flood_risks",
+                                 label = "Show only most-affected areas?",
+                                 value = TRUE
+                   ),
                  
                    checkboxInput("flood_incidents",
-                                 label = "Include historical flooding",
+                                 label = "Include historical flooding?",
                                  value = FALSE
                                  )
                  )
@@ -133,7 +138,7 @@ ui <- function(request) {
         ),
         
         menuItem("Migration and Displacement",
-                 icon = icon("stethoscope"), tabName = "pcn", # badgeLabel = "new", badgeColor = "green",
+                 icon = icon("stethoscope"), tabName = "migration_tab", # badgeLabel = "new", badgeColor = "green",
                  "Migration"
         )
       ),
@@ -203,6 +208,78 @@ server <- function(input, output) {
         onClick = JS("function(btn, map){ map.setZoom(6); }")
       ))
   })
+  
+  # ---- Map filters ----
+  filteredLAs <- reactive({
+    if (input$sidebarItemExpanded == "DisastersandEmergencies") {
+      
+      if (input$shocks == "None") {
+        ri_shp
+        
+      } else if (input$shocks == "Floods"){
+        
+        if (input$highest_flood_risks & !input$flood_incidents) {
+          # Show areas with highest flood risks but not historical incidents
+          ri_shp %>% filter(`Flood incidents quintile` == 5)
+          
+        } else if (!input$highest_flood_risks & !input$flood_incidents) {
+          # Show areas with any flood risk but not historical incidents
+          ri_shp %>% filter(!is.na(`Flood incidents quintile`))
+          
+        } else if (input$highest_flood_risks & input$flood_incidents) {
+          # Show areas with highest floods risk and/or historical incidents
+          ri_shp %>% filter(`Flood incidents quintile` == 5 | !is.na(`Total historical flooding incidents`))
+          
+        } else if (!input$highest_flood_risks & input$flood_incidents) {
+          # Show areas with any floods ris and/or historical incidents
+          ri_shp %>% filter(!is.na(`Flood incidents quintile`) | !is.na(`Total historical flooding incidents`))
+          
+        }
+        
+      } else if (input$shocks == "Dwelling fires") {
+        ri_shp %>% filter(`Fire incidents quintile` == 5)
+      }
+    }
+  })
+  
+  observe({
+    # Debug
+    # print(input$sidebarItemExpanded)
+    # print(input$shocks)
+    print(nrow(filteredLAs()))
+    
+    leafletProxy("map") %>%
+      clearShapes() %>%
+      
+      # Show filtered Local Authorities
+      addPolygons(
+        data = filteredLAs(),
+        # Use the layerID to observe click-events and update plots
+        layerId = ~lad19cd,
+        group = "Vulnerability vs. Resilience",
+        fillColor = ~fill,
+        weight = 0.7,
+        opacity = 0.8,
+        color = "black",
+        dashArray = "0.1",
+        fillOpacity = 0.7,
+        highlight = highlightOptions(
+          weight = 5,
+          color = "#666",
+          dashArray = "",
+          fillOpacity = 0.7,
+          bringToFront = TRUE
+        ),
+        
+        label = labels,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto"
+        )
+      )
+  })
+  
   
   # - Error messages -
   sever()
