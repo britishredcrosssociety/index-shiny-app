@@ -21,7 +21,7 @@ library(waiter)
 library(dashboardthemes)
 
 # ---- Load data ----
-# source("functions.R")
+source("functions.R")
 
 # Boundaries
 lad_shp <- read_sf("data/lad.shp")
@@ -264,10 +264,10 @@ server <- function(input, output) {
   # ---- Observer for updating map ----
   observe({
     # Debug
-    print(input$sidebarItemExpanded)
+    # print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
-    # print(clicked_polygon())
+    print(clicked_polygon())
     
     curr_polygon <- clicked_polygon()  # Did user click a polygon on the map?
     
@@ -324,6 +324,17 @@ server <- function(input, output) {
             "Socioeconomic vulnerability: ", `Socioeconomic Vulnerability decile`, "<br/>"
           )
         ) %>%
+        
+        clearControls() %>%
+        addLegend_decreasing(
+          data = vi_shp,
+          position = "bottomright",
+          pal = vi_pal,
+          values = ~`Vulnerability decile`,
+          title = paste0("Vulnerability", tags$br(), " (10 = most vulnerable)"),
+          opacity = 0.8,
+          decreasing = TRUE
+        ) %>% 
         
         setView(lng = curr_centroid$lng, lat = curr_centroid$lat, zoom = 10)
     }
