@@ -106,7 +106,7 @@ ui <- function(request) {
         and then select a domain of vulnerability to show on the map."
       ),
       
-      h4("1. Select area", style = "padding-left:10px; padding-right:10px;"),
+      h4("1. Select type of resilience", style = "padding-left:10px; padding-right:10px;"),
       
       sidebarMenu(
         id = "sidebar",
@@ -146,12 +146,20 @@ ui <- function(request) {
         )
       ),
       
-      h4("2. Select vulnerability domain", style = "padding-left:10px; padding-right:10px;"),
+      h4("2. Select area", style = "padding-left:10px; padding-right:10px;"),
       
-      selectInput("vi",
-                  label = "Type of vulnerability",
-                  choices = c("Socioeconomic vulnerability", "Clinical vulnerability", "Overall vulnerability")
-      ),
+      selectInput("lad",
+                  label = "Choose a Local Authority",
+                  choices = c("All", sort(lad_shp$lad19nm)),
+                  selected = "All"
+                  ),
+      
+      # h4("2. Select vulnerability domain", style = "padding-left:10px; padding-right:10px;"),
+      # 
+      # selectInput("vi",
+      #             label = "Type of vulnerability",
+      #             choices = c("Socioeconomic vulnerability", "Clinical vulnerability", "Overall vulnerability")
+      # ),
       br(),
       br(),
       
@@ -170,6 +178,8 @@ ui <- function(request) {
 # ---- Server ----
 server <- function(input, output) {
   vi_pal <- colorFactor("viridis", c(1:10), reverse = TRUE)
+  
+  curr_polygon <- reactiveVal()  # track which LA the user clicked on
   
   # ---- Draw basemap ----
   # set up the static parts of the map (that don't change as user selects different options)
@@ -216,39 +226,51 @@ server <- function(input, output) {
   
   # ---- Map filters ----
   filteredLAs <- reactive({
+    output_shp <- ri_shp  # Set up object to return
+    
+    # - Filter based on type of resilience selected -
     if (input$sidebarItemExpanded == "DisastersandEmergencies") {
       if (input$shocks == "None") {
-        ri_shp
+        output_shp <- ri_shp
         
       } else if (input$shocks == "Floods"){
         
         if (input$highest_flood_risks & !input$flood_incidents) {
           # Show areas with highest flood risks but not historical incidents
-          ri_shp %>% filter(`Flood incidents quintile` == 5)
+          output_shp <- ri_shp %>% filter(`Flood incidents quintile` == 5)
           
         } else if (!input$highest_flood_risks & !input$flood_incidents) {
           # Show areas with any flood risk but not historical incidents
-          ri_shp %>% filter(!is.na(`Flood incidents quintile`))
+          output_shp <- ri_shp %>% filter(!is.na(`Flood incidents quintile`))
           
         } else if (input$highest_flood_risks & input$flood_incidents) {
           # Show areas with highest floods risk and/or historical incidents
-          ri_shp %>% filter(`Flood incidents quintile` == 5 | !is.na(`Total historical flooding incidents`))
+          output_shp <- ri_shp %>% filter(`Flood incidents quintile` == 5 | !is.na(`Total historical flooding incidents`))
           
         } else if (!input$highest_flood_risks & input$flood_incidents) {
           # Show areas with any floods ris and/or historical incidents
-          ri_shp %>% filter(!is.na(`Flood incidents quintile`) | !is.na(`Total historical flooding incidents`))
+          output_shp <- ri_shp %>% filter(!is.na(`Flood incidents quintile`) | !is.na(`Total historical flooding incidents`))
           
         }
         
       } else if (input$shocks == "Dwelling fires") {
-        ri_shp %>% filter(`Fire incidents quintile` == 5)
+        output_shp <- ri_shp %>% filter(`Fire incidents quintile` == 5)
       }
       
     } else if (input$sidebarItemExpanded == "HealthInequalities") {
-      ri_shp
+      output_shp <- ri_shp
       
     } else if (input$sidebarItemExpanded == "MigrationandDisplacement") {
-      ri_shp
+      output_shp <- ri_shp
+    }
+    
+    # - Filter based on user-selected LAs from list -
+    if (input$lad == "All") {
+      # No further filtering required
+      output_shp
+      
+    } else {
+      output_shp %>% filter(lad19nm == input$lad)
     }
   })
   
@@ -257,8 +279,10 @@ server <- function(input, output) {
     # Set default to NULL
     if (is.null(input$map_shape_click$id)) {
       return(NULL)
+      
+    } else {
+      input$map_shape_click$id    
     }
-    input$map_shape_click$id
   })
   
   # ---- Observer for updating map ----
@@ -267,9 +291,8 @@ server <- function(input, output) {
     # print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
-    print(clicked_polygon())
     
-    curr_polygon <- clicked_polygon()  # Did user click a polygon on the map?
+    curr_polygon(clicked_polygon())  # Did user click a polygon on the map?
     
     map <- leafletProxy("map") %>%
       clearShapes() %>% 
@@ -303,14 +326,14 @@ server <- function(input, output) {
       )
     
     # If user clicks a Local Authority, zoom to it and show vulnerable MSOAs
-    if (!is.null(curr_polygon)) {
+    if (!is.null(curr_polygon())) {
       # Get LA centroid for zooming
       curr_centroid <- la_centroids %>% 
-        filter(lad19cd == curr_polygon)
+        filter(lad19cd == curr_polygon())
       
       # Get vulnerable MSOAs for current LA
       vi_curr <- vi_shp %>% 
-        filter(LAD19CD == curr_polygon)
+        filter(LAD19CD == curr_polygon())
       
       map <- map %>% 
         addPolygons(
