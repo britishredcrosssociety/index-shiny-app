@@ -66,17 +66,22 @@ body_colwise <- dashboardBody(
   fluidRow(
     column(
       width = 12,
-      box(
-        width = NULL, height = "960px",
+      tabBox(
+        width = NULL, height = "960px", side = "right",
         title = "Local Authority Vulnerability and Resilience",
-        leafletOutput("map", height = "890px"),
         
-        absolutePanel(
-          id = "legend", class = "panel panel-default",
-          top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = FALSE,
-          draggable = FALSE, height = "auto",
-          img(src = "bivar-legend.png", width = 300)
-        )
+        tabPanel("Map", 
+          leafletOutput("map", height = "890px"),
+          
+          absolutePanel(
+            id = "legend", class = "panel panel-default",
+            top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = FALSE,
+            draggable = FALSE, height = "auto",
+            img(src = "bivar-legend.png", width = 300)
+          )
+        ),
+        
+        tabPanel("Data", "Data tab")
       )
     )
   ) # fluidRow
@@ -85,7 +90,7 @@ body_colwise <- dashboardBody(
 ui <- function(request) {
   dashboardPage(
     header = dashboardHeader(
-      title = "Vulnerability Index", titleWidth = "300px",
+      title = "British Red Cross Vulnerability Index", titleWidth = "350px",
       # to add in bookmark button
       tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px")
     ),
