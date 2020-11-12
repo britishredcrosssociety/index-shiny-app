@@ -341,6 +341,7 @@ server <- function(input, output, session) {
     
     map <- leafletProxy("map") %>%
       clearShapes() %>%
+      clearControls() %>%
 
       # Show filtered Local Authorities
       addPolygons(
@@ -398,7 +399,6 @@ server <- function(input, output, session) {
           )
         ) %>%
         
-        clearControls() %>%
         addLegend_decreasing(
           data = vi_shp,
           position = "bottomright",
