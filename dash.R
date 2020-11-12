@@ -251,7 +251,7 @@ ui <- function(request) {
         title = "Economic Vulnerability",
         icon = "pound-sign",
         
-        numericInput("obs", "Observations:", 10, min = 1, max = 100)
+        uiOutput("vi_economic")
       ),
       
       rightSidebarTabContent(
@@ -631,6 +631,56 @@ server <- function(input, output, session) {
     HTML(paste(str_stats, collapse = "<br/><br/>"))
   })
 
+  # Economic vulnerability
+  output$vi_economic = renderUI({
+    if (is.null(selected_msoa()))
+      return("Select a Local Authority then click a neighbourhood to see the underlying indicators.")
+    
+    # Get vulnerable MSOAs for current LA
+    vi_curr <- vi %>% 
+      filter(Code == selected_msoa())
+    
+    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    
+    if (!is.na(vi_curr$`Older people social care benefit (Attendance Allowance) Rate`))
+      str_stats = c(str_stats, paste0("Older people social care benefit: ", round(vi_curr$`Older people social care benefit (Attendance Allowance) Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Older people social care benefit (Attendance Allowance) Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Employment and Support Allowance claimants, disease code nervous system Rate`))
+      str_stats = c(str_stats, paste0("ESA claimants - disease code nervous system: ", round(vi_curr$`Employment and Support Allowance claimants, disease code nervous system Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Employment and Support Allowance claimants, disease code nervous system Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Employment and Support Allowance claimants, disease code respiratory or circulatory Rate`))
+      str_stats = c(str_stats, paste0("ESA claimants - disease code respiratory or circulatory: ", round(vi_curr$`Employment and Support Allowance claimants, disease code respiratory or circulatory Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Employment and Support Allowance claimants, disease code respiratory or circulatory Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`People receiving Disability Benefits Rate`))
+      str_stats = c(str_stats, paste0("People receiving Disability Benefits: ", round(vi_curr$`People receiving Disability Benefits Rate`, 2), "%<br/>(England average: ", round(mean(vi$`People receiving Disability Benefits Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Personal Independence Payment (PIP), respiratory disease claimants Rate`))
+      str_stats = c(str_stats, paste0("PIP claimants: ", round(vi_curr$`Personal Independence Payment (PIP), respiratory disease claimants Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Personal Independence Payment (PIP), respiratory disease claimants Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Households on Universal Credit - Limited Capability for Work Entitlement Rate`))
+      str_stats = c(str_stats, paste0("Households on Universal Credit - Limited Capability for Work Entitlement: ", round(vi_curr$`Households on Universal Credit - Limited Capability for Work Entitlement Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Households on Universal Credit - Limited Capability for Work Entitlement Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Universal Credit claimants - Conditionality Regime: No work requirements Rate`))
+      str_stats = c(str_stats, paste0("Universal Credit claimants - No work requirements: ", round(vi_curr$`Universal Credit claimants - Conditionality Regime: No work requirements Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Universal Credit claimants - Conditionality Regime: No work requirements Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Jobs in accommodation and food services (hospitality) Rate`))
+      str_stats = c(str_stats, paste0("Jobs in accommodation and hospitality: ", round(vi_curr$`Jobs in accommodation and food services (hospitality) Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Jobs in accommodation and food services (hospitality) Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Jobs in arts, entertainment, recreation and other services Rate`))
+      str_stats = c(str_stats, paste0("Jobs in arts, entertainment, recreation: ", round(vi_curr$`Jobs in arts, entertainment, recreation and other services Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Jobs in arts, entertainment, recreation and other services Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Jobs in retail Rate`))
+      str_stats = c(str_stats, paste0("Jobs in retail: ", round(vi_curr$`Jobs in retail Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Jobs in retail Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Jobs in transport and storage (inc postal) Rate`))
+      str_stats = c(str_stats, paste0("Jobs in transport and storage: ", round(vi_curr$`Jobs in transport and storage (inc postal) Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Jobs in transport and storage (inc postal) Rate`, na.rm = TRUE), 2), "%)"))
+    
+    if (!is.na(vi_curr$`Financial Vulnerability score`))
+      str_stats = c(str_stats, paste0("Financial Vulnerability score: ", round(vi_curr$`Financial Vulnerability score`, 2), "<br/>(England average: ", round(mean(vi$`Financial Vulnerability score`, na.rm = TRUE), 2), ")"))
+    
+    HTML(paste(str_stats, collapse = "<br/><br/>"))
+  })
+  
   # - Error messages -
   sever()
   
