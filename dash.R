@@ -61,7 +61,7 @@ body_colwise <- dashboardBody(
   
   fluidRow(
     column(
-      width = 6,
+      width = 12,
       box(
         width = NULL, height = "960px",
         title = "Local Authority Vulnerability and Resilience",
@@ -69,7 +69,7 @@ body_colwise <- dashboardBody(
         
         absolutePanel(
           id = "legend", class = "panel panel-default",
-          top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = TRUE,
+          top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = FALSE,
           draggable = FALSE, height = "auto",
           img(src = "bivar-legend.png", width = 300)
         )
