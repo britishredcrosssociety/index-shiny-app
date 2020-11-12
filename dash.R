@@ -12,6 +12,7 @@ library(leaflet)
 library(scales)
 library(shinydashboard)
 library(shinyWidgets)
+library(htmltools)
 # for plots
 library(echarts4r)
 # Custom error messages and loading screens
@@ -295,6 +296,7 @@ server <- function(input, output, session) {
     # print(input$shocks)
     # print(nrow(filteredLAs()))
     # print(curr_polygon())
+    # print(input$map_shape_click$id)
     
     # curr_polygon(clicked_polygon())  # Did user click a polygon on the map?
     
@@ -308,12 +310,26 @@ server <- function(input, output, session) {
       curr_polygon(lad_shp$lad19cd[ lad_shp$lad19nm == input$lad ])
     }
     
+    # print(curr_polygon())
+    
+    # Get selected set of LAs
+    curr_LAs <- filteredLAs()
+    
+    # Re-create labels, in case user has filtered LAs
+    labels <-
+      paste0(
+        sprintf("<strong>%s</strong><br/>", curr_LAs$lad19nm),
+        "Vulnerability quintile: ", curr_LAs$`Vulnerability quintile`, "<br/>",
+        "Resilience quintile: ", curr_LAs$`Capacity quintile`
+      ) %>%
+      lapply(htmltools::HTML)
+    
     map <- leafletProxy("map") %>%
-      clearShapes() %>% 
-      
+      clearShapes() %>%
+
       # Show filtered Local Authorities
       addPolygons(
-        data = filteredLAs(),
+        data = curr_LAs,
         # Use the layerID to observe click-events and update plots
         layerId = ~lad19cd,
         group = "Vulnerability vs. Resilience",
@@ -330,7 +346,7 @@ server <- function(input, output, session) {
           fillOpacity = 0.7,
           bringToFront = TRUE
         ),
-        
+
         label = labels,
         labelOptions = labelOptions(
           style = list("font-weight" = "normal", padding = "3px 8px"),
@@ -352,6 +368,7 @@ server <- function(input, output, session) {
       map <- map %>% 
         addPolygons(
           data = vi_curr,
+          group = "VI",
           layerId = ~MSOA11CD,
           fillColor = ~ vi_pal(`Vulnerability decile`), fillOpacity = 0.8, color = "white", weight = 0.7,
           popup = ~ paste(
