@@ -289,6 +289,19 @@ server <- function(input, output, session) {
     }
   })
   
+  # ---- Reset view if user changes disasters/shocks ----
+  observeEvent(input$shocks, {
+    updateSelectInput(session, "lad", selected = "All")
+  })
+  
+  observeEvent(input$highest_flood_risks, {
+    updateSelectInput(session, "lad", selected = "All")
+  })
+  
+  observeEvent(input$flood_incidents, {
+    updateSelectInput(session, "lad", selected = "All")
+  })
+  
   # ---- Observer for updating map ----
   observe({
     # Debug
