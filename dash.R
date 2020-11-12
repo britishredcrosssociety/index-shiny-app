@@ -176,7 +176,7 @@ ui <- function(request) {
 }
 
 # ---- Server ----
-server <- function(input, output) {
+server <- function(input, output, session) {
   vi_pal <- colorFactor("viridis", c(1:10), reverse = TRUE)
   
   curr_polygon <- reactiveVal()  # track which LA the user clicked on
@@ -193,7 +193,7 @@ server <- function(input, output) {
       # - All LA's -
       addPolygons(
         # Use the layerID to observe click-events and update plots
-        layerId = ~lad19cd,
+        layerId = ~lad19nm,
         group = "Vulnerability vs. Resilience",
         fillColor = ~fill,
         weight = 0.7,
@@ -264,24 +264,27 @@ server <- function(input, output) {
       output_shp <- ri_shp
     }
     
-    # - Filter based on user-selected LAs from list -
-    if (input$lad == "All") {
-      # No further filtering required
-      output_shp
-      
-    } else {
-      output_shp %>% filter(lad19nm == input$lad)
-    }
+    output_shp
   })
   
   # Track which polygon the user clicked on
-  clicked_polygon <- reactive({
-    # Set default to NULL
+  observeEvent(input$map_shape_click, {
+    
     if (is.null(input$map_shape_click$id)) {
-      return(NULL)
+      curr_polygon(NULL)
       
+    } else if (str_detect(input$map_shape_click$id, "^E02")) {
+      # User selected an MSOA - do nothing
+      return()
+    
     } else {
-      input$map_shape_click$id    
+      curr_polygon(input$map_shape_click$id)
+      
+      # Get name from selected LA code
+      curr_lad <- lad_shp$lad19nm[ lad_shp$lad19cd == input$map_shape_click$id ]
+      
+      # Show clicked LA name in the select box
+      updateSelectInput(session, "lad", selected = curr_lad)
     }
   })
   
@@ -291,8 +294,19 @@ server <- function(input, output) {
     # print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
+    # print(curr_polygon())
     
-    curr_polygon(clicked_polygon())  # Did user click a polygon on the map?
+    # curr_polygon(clicked_polygon())  # Did user click a polygon on the map?
+    
+    # - Filter based on user-selected LAs from list -
+    if (input$lad == "All") {
+      # Deselect LAs
+      curr_polygon(NULL)
+      
+    } else {
+      # update map zoom
+      curr_polygon(lad_shp$lad19cd[ lad_shp$lad19nm == input$lad ])
+    }
     
     map <- leafletProxy("map") %>%
       clearShapes() %>% 
@@ -338,6 +352,7 @@ server <- function(input, output) {
       map <- map %>% 
         addPolygons(
           data = vi_curr,
+          layerId = ~MSOA11CD,
           fillColor = ~ vi_pal(`Vulnerability decile`), fillOpacity = 0.8, color = "white", weight = 0.7,
           popup = ~ paste(
             "<b>", Name, "</b><br/><br/>",
