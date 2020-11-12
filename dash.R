@@ -72,7 +72,7 @@ body_colwise <- dashboardBody(
         title = "Local Authority Vulnerability and Resilience",
         
         tabPanel("Map", 
-                 icon = icon(name = "map-marked-alt"),
+                 icon = icon(name = "map-marked"),
                  
                  leafletOutput("map", height = "890px"),
                  
@@ -482,7 +482,8 @@ server <- function(input, output, session) {
               options = list(
                 dom = "Bfrtip",
                 buttons = c("csv", "excel", "colvis"),
-                colReorder = TRUE
+                colReorder = TRUE,
+                scrollX = TRUE
               )
     )
   )
