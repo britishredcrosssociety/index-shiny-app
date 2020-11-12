@@ -188,35 +188,35 @@ server <- function(input, output, session) {
     leaflet(ri_shp,
             options = leafletOptions(minZoom = 5, maxZoom = 15, attributionControl = F)) %>%
       
-      setView(lat = 54.00366, lng = -2.547855, zoom = 7) %>% # centre map on Whitendale Hanging Stones, the centre of GB: https://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom
+      # setView(lat = 54.00366, lng = -2.547855, zoom = 7) %>% # centre map on Whitendale Hanging Stones, the centre of GB: https://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom
       addProviderTiles(providers$CartoDB.Positron) %>%
       
       # - All LA's -
-      addPolygons(
-        # Use the layerID to observe click-events and update plots
-        layerId = ~lad19nm,
-        group = "Vulnerability vs. Resilience",
-        fillColor = ~fill,
-        weight = 0.7,
-        opacity = 0.8,
-        color = "black",
-        dashArray = "0.1",
-        fillOpacity = 0.7,
-        highlight = highlightOptions(
-          weight = 5,
-          color = "#666",
-          dashArray = "",
-          fillOpacity = 0.7,
-          bringToFront = TRUE
-        ),
-        
-        label = labels,
-        labelOptions = labelOptions(
-          style = list("font-weight" = "normal", padding = "3px 8px"),
-          textsize = "15px",
-          direction = "auto"
-        )
-      ) %>% 
+      # addPolygons(
+      #   # Use the layerID to observe click-events and update plots
+      #   layerId = ~lad19nm,
+      #   group = "Vulnerability vs. Resilience",
+      #   fillColor = ~fill,
+      #   weight = 0.7,
+      #   opacity = 0.8,
+      #   color = "black",
+      #   dashArray = "0.1",
+      #   fillOpacity = 0.7,
+      #   highlight = highlightOptions(
+      #     weight = 5,
+      #     color = "#666",
+      #     dashArray = "",
+      #     fillOpacity = 0.7,
+      #     bringToFront = TRUE
+      #   ),
+      #   
+      #   label = labels,
+      #   labelOptions = labelOptions(
+      #     style = list("font-weight" = "normal", padding = "3px 8px"),
+      #     textsize = "15px",
+      #     direction = "auto"
+      #   )
+      # ) %>% 
       
       # Add button to reset zoom
       addEasyButton(easyButton(
@@ -315,6 +315,8 @@ server <- function(input, output, session) {
     # Get selected set of LAs
     curr_LAs <- filteredLAs()
     
+    # updateSelectInput(session, "lad", choices = c("All", sort(curr_LAs$lad19nm)), selected = input$lad)
+    
     # Re-create labels, in case user has filtered LAs
     labels <-
       paste0(
@@ -365,6 +367,9 @@ server <- function(input, output, session) {
       vi_curr <- vi_shp %>% 
         filter(LAD19CD == curr_polygon())
       
+      # Get bounding box of current LA
+      curr_bbox <- st_bbox(vi_curr)
+      
       map <- map %>% 
         addPolygons(
           data = vi_curr,
@@ -391,7 +396,20 @@ server <- function(input, output, session) {
           decreasing = TRUE
         ) %>% 
         
-        setView(lng = curr_centroid$lng, lat = curr_centroid$lat, zoom = 10)
+        flyToBounds(lng1 = as.numeric(curr_bbox["xmin"]), 
+                    lat1 = as.numeric(curr_bbox["ymin"]), 
+                    lng2 = as.numeric(curr_bbox["xmax"]), 
+                    lat2 = as.numeric(curr_bbox["ymax"]))
+    
+    } else {
+      # Get bounding box of current LAs and zoom to it
+      curr_bbox <- st_bbox(curr_LAs)
+      
+      map <- map %>% 
+        flyToBounds(lng1 = as.numeric(curr_bbox["xmin"]), 
+                    lat1 = as.numeric(curr_bbox["ymin"]), 
+                    lng2 = as.numeric(curr_bbox["xmax"]), 
+                    lat2 = as.numeric(curr_bbox["ymax"]))
     }
     
     map
