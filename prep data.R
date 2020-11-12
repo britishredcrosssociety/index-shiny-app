@@ -4,16 +4,20 @@
 library(tidyverse)
 library(arrow)
 
+# ---- Resilience Index ----
 ri <- read_csv("https://github.com/britishredcrosssociety/resilience-index/raw/main/data/processed/resilience%20index.csv")
 
-# write_csv(ri, "data/resilience-index.csv")
-# write_feather(ri, "data/resilience-index.feather")
+# ---- Vulnerability Index ----
+vi <- read_csv("https://github.com/britishredcrosssociety/covid-19-vulnerability/raw/master/output/vulnerability-MSOA-England.csv")
 
-# Test - arrow is ~9x faster
-# bench::mark(
-#   read_feather("data/resilience-index.feather"),
-#   read_csv("data/resilience-index.csv")
-# )
+# Lookup MSOAs to LAs
+msoa_lad <- read_csv("https://github.com/britishredcrosssociety/covid-19-vulnerability/raw/master/data/lookup%20mosa11%20to%20lad17%20to%20lad19%20to%20tactical%20cell.csv")
+
+vi <- vi %>% 
+  left_join(msoa_lad %>% select(-LAD17CD),
+            by = c("Code" = "MSOA11CD"))
+
+write_feather(vi, "data/vulnerability-index-msoa-england.feather")
 
 # ---- Bivariate Scores ----
 # create 3 buckets for vulnerability and resilience to map to colours

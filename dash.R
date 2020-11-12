@@ -23,17 +23,25 @@ library(dashboardthemes)
 # ---- Load data ----
 # source("functions.R")
 
-ri <- read_feather("data/resilience-index.feather")
+# Boundaries
 lad_shp <- read_sf("data/lad.shp")
+msoa_shp <- read_sf("data/msoa.shp")
 
-ri_shp <- lad_shp %>% 
-  left_join(ri, by = c("lad19cd" = "LAD19CD"))
+ri <- read_feather("data/resilience-index.feather")
+vi <- read_feather("data/vulnerability-index-msoa-england.feather")
 
 labels <- read_rds("data/la-labels.rds")  # Local Authority labels for map
 
 la_centroids <- read_feather("data/la-centroids.feather")
 
-# # ---- UI ----
+# ---- Data prep ----
+ri_shp <- lad_shp %>% 
+  left_join(ri, by = c("lad19cd" = "LAD19CD"))
+
+vi_shp <- msoa_shp %>% 
+  left_join(vi, by = c("MSOA11CD" = "Code"))
+
+# ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
 body_colwise <- dashboardBody(
   
@@ -161,6 +169,8 @@ ui <- function(request) {
 
 # ---- Server ----
 server <- function(input, output) {
+  vi_pal <- colorFactor("viridis", c(1:10), reverse = TRUE)
+  
   # ---- Draw basemap ----
   # set up the static parts of the map (that don't change as user selects different options)
   output$map <- renderLeaflet({
@@ -207,7 +217,6 @@ server <- function(input, output) {
   # ---- Map filters ----
   filteredLAs <- reactive({
     if (input$sidebarItemExpanded == "DisastersandEmergencies") {
-      
       if (input$shocks == "None") {
         ri_shp
         
@@ -234,6 +243,12 @@ server <- function(input, output) {
       } else if (input$shocks == "Dwelling fires") {
         ri_shp %>% filter(`Fire incidents quintile` == 5)
       }
+      
+    } else if (input$sidebarItemExpanded == "HealthInequalities") {
+      ri_shp
+      
+    } else if (input$sidebarItemExpanded == "MigrationandDisplacement") {
+      ri_shp
     }
   })
   
@@ -249,10 +264,12 @@ server <- function(input, output) {
   # ---- Observer for updating map ----
   observe({
     # Debug
-    # print(input$sidebarItemExpanded)
+    print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
-    print(clicked_polygon())
+    # print(clicked_polygon())
+    
+    curr_polygon <- clicked_polygon()  # Did user click a polygon on the map?
     
     map <- leafletProxy("map") %>%
       clearShapes() %>% 
@@ -285,13 +302,29 @@ server <- function(input, output) {
         )
       )
     
-    # If user clicks a Local Authority, zoom to it
-    if (!is.null(clicked_polygon())) {
-      # Get centroid
+    # If user clicks a Local Authority, zoom to it and show vulnerable MSOAs
+    if (!is.null(curr_polygon)) {
+      # Get LA centroid for zooming
       curr_centroid <- la_centroids %>% 
-        filter(lad19cd == clicked_polygon())
+        filter(lad19cd == curr_polygon)
+      
+      # Get vulnerable MSOAs for current LA
+      vi_curr <- vi_shp %>% 
+        filter(LAD19CD == curr_polygon)
       
       map <- map %>% 
+        addPolygons(
+          data = vi_curr,
+          fillColor = ~ vi_pal(`Vulnerability decile`), fillOpacity = 0.8, color = "white", weight = 0.7,
+          popup = ~ paste(
+            "<b>", Name, "</b><br/><br/>",
+            "Overall vulnerability (10 = worst): ", `Vulnerability decile`, "<br/>",
+            "Clinical vulnerability: ", `Clinical Vulnerability decile`, "<br/>",
+            "Health/wellbeing vulnerability: ", `Health/Wellbeing Vulnerability decile`, "<br/>",
+            "Socioeconomic vulnerability: ", `Socioeconomic Vulnerability decile`, "<br/>"
+          )
+        ) %>%
+        
         setView(lng = curr_centroid$lng, lat = curr_centroid$lat, zoom = 10)
     }
     
