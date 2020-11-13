@@ -22,6 +22,7 @@ library(sever)
 library(waiter)
 # Custom shiny theme
 library(dashboardthemes)
+library(shinyjs)
 
 # ---- Load data ----
 source("functions.R")
@@ -55,6 +56,8 @@ body_colwise <- dashboardBody(
     spin_5(),
     div(p("Loading Index"), style = "padding-top:25px;")
   )),
+  
+  useShinyjs(),
   
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
   tags$head(includeCSS("styles.css")),
@@ -366,10 +369,16 @@ server <- function(input, output, session) {
     if (is.null(input$map_shape_click$id)) {
       selected_polygon(NULL)
       
+      # Hide the right-hand sidebar with VI indicators (if it was open)
+      shinyjs::removeClass(selector = "body", class = "control-sidebar-open")
+      
     } else if (str_detect(input$map_shape_click$id, "^E02")) {
       # User selected an MSOA - do nothing
       # return()
       selected_msoa(input$map_shape_click$id)
+      
+      # Show the right-hand sidebar with VI indicators
+      shinyjs::addClass(selector = "body", class = "control-sidebar-open")
     
     } else {
       selected_polygon(input$map_shape_click$id)
@@ -379,6 +388,9 @@ server <- function(input, output, session) {
       
       # Show clicked LA name in the select box
       updateSelectInput(session, "lad", selected = curr_lad)
+      
+      # Hide the right-hand sidebar with VI indicators (if it was open)
+      shinyjs::removeClass(selector = "body", class = "control-sidebar-open")
     }
   })
   
