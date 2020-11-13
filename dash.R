@@ -113,7 +113,7 @@ body_colwise <- dashboardBody(
         
         tabPanel("Map", 
                  id = "map-tab",
-                 icon = icon(name = "map-marked"),
+                 icon = icon(name = "globe"),
                  
                  leafletOutput("map", height = "890px"),
                  
@@ -233,7 +233,7 @@ ui <- function(request) {
         ),
         
         menuItem("Migration and Displacement",
-                 icon = icon("stethoscope"), tabName = "migration_tab", # badgeLabel = "new", badgeColor = "green",
+                 icon = icon("user"), tabName = "migration_tab", # badgeLabel = "new", badgeColor = "green",
                  "Migration"
         )
       ),
