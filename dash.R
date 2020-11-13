@@ -376,6 +376,9 @@ server <- function(input, output, session) {
   filteredLAs <- reactive({
     output_shp <- ri_shp  # Set up object to return
     
+    if (is.null(input$sidebarItemExpanded))
+      return(output_shp)
+    
     # - Filter based on type of resilience selected -
     if (input$sidebarItemExpanded == "DisastersandEmergencies") {
       if (input$shocks == "None") {
@@ -462,7 +465,7 @@ server <- function(input, output, session) {
   # ---- Observer for updating map ----
   observe({
     # Debug
-    # print(input$sidebarItemExpanded)
+    print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
     # print(selected_polygon())
@@ -593,6 +596,18 @@ server <- function(input, output, session) {
   filteredData <- reactive({
     # ri_tmp <- ri %>% 
     #   mutate(`% people in highly vulnerable areas` = paste0(round(`Extent of population living in highly vulnerable areas` * 100, 1), "%"))
+    
+    if (is.null(input$sidebarItemExpanded)) {
+      cols_to_format(c("Extent of population living in highly vulnerable areas"))
+      
+      return(
+        ri %>% 
+          select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                 `Capacity rank`, `Capacity quintile`, 
+                 `Vulnerability rank`, `Vulnerability quintile`, 
+                 `Extent of population living in highly vulnerable areas`)
+      )
+    }
     
     # - Filter based on type of resilience selected -
     if (input$sidebarItemExpanded == "DisastersandEmergencies") {
