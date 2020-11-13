@@ -76,6 +76,7 @@ body_colwise <- dashboardBody(
         title = "Local Authority Vulnerability and Resilience",
         
         tabPanel("Map", 
+                 id = "map-tab",
                  icon = icon(name = "map-marked"),
                  
                  leafletOutput("map", height = "890px"),
@@ -272,10 +273,15 @@ ui <- function(request) {
 
 # ---- Server ----
 server <- function(input, output, session) {
+  
+  # ---- Functions and variables for the server ----
   vi_pal <- colorFactor("viridis", c(1:10), reverse = TRUE)
   
   selected_polygon <- reactiveVal()  # track which LA the user clicked on
   selected_msoa <- reactiveVal()  # track if user clicked an MSOA
+  
+  # Set up a waiter for the map
+  map_waiter <- Waiter$new(id = "map", color = transparent(.5))
   
   # ---- Draw basemap ----
   # set up the static parts of the map (that don't change as user selects different options)
@@ -418,6 +424,8 @@ server <- function(input, output, session) {
     
     # selected_polygon(clicked_polygon())  # Did user click a polygon on the map?
     
+    map_waiter$show()
+    
     # - Filter based on user-selected LAs from list -
     if (input$lad == "All") {
       # Deselect LAs
@@ -529,6 +537,8 @@ server <- function(input, output, session) {
                     lng2 = as.numeric(curr_bbox["xmax"]), 
                     lat2 = as.numeric(curr_bbox["ymax"]))
     }
+    
+    map_waiter$hide()
     
     map
   })
