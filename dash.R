@@ -23,6 +23,7 @@ library(waiter)
 # Custom shiny theme
 library(dashboardthemes)
 library(shinyjs)
+library(cicerone)
 
 # ---- Load data ----
 source("functions.R")
@@ -45,6 +46,40 @@ ri_shp <- lad_shp %>%
 vi_shp <- msoa_shp %>% 
   left_join(vi, by = c("MSOA11CD" = "Code"))
 
+# ---- Guided tour of UI ----
+guide <- Cicerone$
+  new()$ 
+  step(
+    el = ".sidebar-menu",
+    title = "Choose type of resilience",
+    description = "Click the items here to view resilience to disasters and emergencies, health inequalities, or migration and displacement.",
+    is_id = FALSE
+  )$
+  step(
+    ".treeview-menu",
+    "Choose filters",
+    "You can filter some types of resilience. For example, here you can filter Local Authorities with high risks of flooding or fires.",
+    is_id = FALSE
+  )$
+  step(
+    ".lad-select",
+    "Select Local Authorities",
+    "Use this box to choose or search for Local Authorities. You can also click Local Authorities on the map to see more details, include their vulnerable neighbourhoods.",
+    is_id = FALSE
+  )$
+  step(
+    ".fa-chart-pie",
+    "View vulnerability indicators",
+    "After choosing a Local Authority and clicking on a vulnerable neighbourhood, this button will show you the Vulnerability Index indicators.",
+    is_id = FALSE
+  )$
+  step(
+    "[data-value='Data']",
+    "View the data",
+    "Click this tab to see the underlying data rather than a map.",
+    is_id = FALSE
+  )
+
 # ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
 body_colwise <- dashboardBody(
@@ -57,6 +92,7 @@ body_colwise <- dashboardBody(
     div(p("Loading Index"), style = "padding-top:25px;")
   )),
   
+  use_cicerone(),
   useShinyjs(),
   
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
@@ -162,7 +198,7 @@ ui <- function(request) {
         and then select a domain of vulnerability to show on the map."
       ),
       
-      h4("1. Select type of resilience", style = "padding-left:10px; padding-right:10px;"),
+      h4("1. Select type of resilience", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
       
       sidebarMenu(
         id = "sidebar",
@@ -204,11 +240,13 @@ ui <- function(request) {
       
       h4("2. Select area", style = "padding-left:10px; padding-right:10px;"),
       
-      selectInput("lad",
-                  label = "Choose a Local Authority",
-                  choices = c("All", sort(lad_shp$lad19nm)),
-                  selected = "All"
-                  ),
+      div(class = "lad-select",  # use this <div> for help guide
+        selectInput("lad",
+                    label = "Choose a Local Authority",
+                    choices = c("All", sort(lad_shp$lad19nm)),
+                    selected = "All"
+                    )
+      ),
       
       # h4("2. Select vulnerability domain", style = "padding-left:10px; padding-right:10px;"),
       # 
@@ -273,6 +311,9 @@ ui <- function(request) {
 
 # ---- Server ----
 server <- function(input, output, session) {
+  
+  # initialise then start the guide
+  guide$init()$start()
   
   # ---- Functions and variables for the server ----
   vi_pal <- colorFactor("viridis", c(1:10), reverse = TRUE)
