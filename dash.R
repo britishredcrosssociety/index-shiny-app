@@ -280,6 +280,8 @@ server <- function(input, output, session) {
   selected_polygon <- reactiveVal()  # track which LA the user clicked on
   selected_msoa <- reactiveVal()  # track if user clicked an MSOA
   
+  cols_to_format <- reactiveVal()  # list of data table columns to format in `renderDT()`
+  
   # Set up a waiter for the map
   map_waiter <- Waiter$new(id = "map", color = transparent(.5))
   
@@ -543,9 +545,118 @@ server <- function(input, output, session) {
     map
   })
   
-  # - Data -
+  # ---- Data ----
+  filteredData <- reactive({
+    # ri_tmp <- ri %>% 
+    #   mutate(`% people in highly vulnerable areas` = paste0(round(`Extent of population living in highly vulnerable areas` * 100, 1), "%"))
+    
+    # - Filter based on type of resilience selected -
+    if (input$sidebarItemExpanded == "DisastersandEmergencies") {
+      if (input$shocks == "None") {
+        cols_to_format(c("Extent of population living in highly vulnerable areas"))
+        
+        ri %>% 
+          select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                 `Capacity rank`, `Capacity quintile`, 
+                 `Vulnerability rank`, `Vulnerability quintile`, 
+                 `Extent of population living in highly vulnerable areas`)
+        
+      } else if (input$shocks == "Floods"){
+        
+        if (input$highest_flood_risks & !input$flood_incidents) {
+          cols_to_format(c("Extent of population living in highly vulnerable areas", "% people in flood risk areas"))
+          
+          # Show areas with highest flood risks but not historical incidents
+          ri %>% 
+            filter(`Flood incidents quintile` == 5) %>%
+            select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                   `Capacity rank`, `Capacity quintile`, 
+                   `Vulnerability rank`, `Vulnerability quintile`, 
+                   `Extent of population living in highly vulnerable areas`, 
+                   `Flood risk quintile`, `% people in flood risk areas`)
+          
+        } else if (!input$highest_flood_risks & !input$flood_incidents) {
+          cols_to_format(c("Extent of population living in highly vulnerable areas", "% people in flood risk areas"))
+          
+          # Show areas with any flood risk but not historical incidents
+          ri %>% 
+            filter(!is.na(`Flood incidents quintile`)) %>% 
+            select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                   `Capacity rank`, `Capacity quintile`, 
+                   `Vulnerability rank`, `Vulnerability quintile`, 
+                   `Extent of population living in highly vulnerable areas`, 
+                   `Flood risk quintile`, `% people in flood risk areas`)
+          
+        } else if (input$highest_flood_risks & input$flood_incidents) {
+          cols_to_format(c("Extent of population living in highly vulnerable areas", "% people in flood risk areas"))
+          
+          # Show areas with highest floods risk and/or historical incidents
+          ri %>% 
+            filter(`Flood incidents quintile` == 5 | !is.na(`Total historical flooding incidents`)) %>% 
+            mutate(`Flooding incidents per 10,000 people` = round(`Flooding incidents per 10,000 people`, 1), 
+                   `Total historical flooding incidents` = round(`Total historical flooding incidents`, 1)) %>% 
+            select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                   `Capacity rank`, `Capacity quintile`, 
+                   `Vulnerability rank`, `Vulnerability quintile`, 
+                   `Extent of population living in highly vulnerable areas`, 
+                   `Flood risk quintile`, `% people in flood risk areas`,
+                   `Flooding incidents per 10,000 people`, `Total historical flooding incidents`)
+          
+        } else if (!input$highest_flood_risks & input$flood_incidents) {
+          cols_to_format(c("Extent of population living in highly vulnerable areas", "% people in flood risk areas"))
+          
+          # Show areas with any floods ris and/or historical incidents
+          ri %>% 
+            filter(!is.na(`Flood incidents quintile`) | !is.na(`Total historical flooding incidents`)) %>% 
+            mutate(`Flooding incidents per 10,000 people` = round(`Flooding incidents per 10,000 people`, 1), 
+                   `Total historical flooding incidents` = round(`Total historical flooding incidents`, 1)) %>% 
+            select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                   `Capacity rank`, `Capacity quintile`, 
+                   `Vulnerability rank`, `Vulnerability quintile`, 
+                   `Extent of population living in highly vulnerable areas`, 
+                   `Flood risk quintile`, `% people in flood risk areas`,
+                   `Flooding incidents per 10,000 people`, `Total historical flooding incidents`)
+          
+        } # end if for flooding
+        
+      } else if (input$shocks == "Dwelling fires") {
+        cols_to_format(c("Extent of population living in highly vulnerable areas"))
+        
+        ri %>%
+          filter(`Fire incidents quintile` == 5) %>% 
+          mutate(`Dwelling fire incidents per 10,000 people` = round(`Dwelling fire incidents per 10,000 people`, 1), 
+                 `Total dwelling fires (three-year average)` = round(`Total dwelling fires (three-year average)`, 1)) %>% 
+          select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+                 `Capacity rank`, `Capacity quintile`, 
+                 `Vulnerability rank`, `Vulnerability quintile`, 
+                 `Extent of population living in highly vulnerable areas`, 
+                 `Fire incidents quintile`, 
+                 `Dwelling fire incidents per 10,000 people`, `Total dwelling fires (three-year average)`)
+        
+      } # end if for shocks
+      
+    } else if (input$sidebarItemExpanded == "HealthInequalities") {
+      cols_to_format(c("Extent of population living in highly vulnerable areas"))
+      
+      ri %>% 
+        select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+               `Capacity rank`, `Capacity quintile`, 
+               `Vulnerability rank`, `Vulnerability quintile`, 
+               `Extent of population living in highly vulnerable areas`)
+      
+    } else if (input$sidebarItemExpanded == "MigrationandDisplacement") {
+      cols_to_format(c("Extent of population living in highly vulnerable areas"))
+      
+      ri %>% 
+        select(`LA code` = LAD19CD, `LA name` = LAD19NM, 
+               `Capacity rank`, `Capacity quintile`, 
+               `Vulnerability rank`, `Vulnerability quintile`, 
+               `Extent of population living in highly vulnerable areas`)
+    }
+  })
+  
   output$data <- renderDT(
-    datatable(ri,
+    datatable(filteredData(),
               rownames = FALSE,
               escape = FALSE,
               extensions = c("Buttons", "ColReorder"),
@@ -555,7 +666,8 @@ server <- function(input, output, session) {
                 colReorder = TRUE,
                 scrollX = TRUE
               )
-    )
+    ) %>% 
+      formatPercentage(columns = cols_to_format(), digits = 1)
   )
   
   # ---- Vulnerability Index underlying indicators ----
