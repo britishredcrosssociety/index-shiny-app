@@ -90,11 +90,22 @@ $( document ).ready(function() {
 "
 
 # ---- JS and CSS to fully collapse sidebar ----
-# Source: https://stackoverflow.com/a/53517933
+# Modified from: https://stackoverflow.com/a/53517933
+# '#sidebarCollapsed' data-collapsed="true"
 sidebar_js <- HTML("
 $(document).on('shiny:connected', function(event) {
   $('.sidebar-toggle').on('click', function() {
+    /*
     if ($('body')[0].className != 'skin-blue sidebar-mini sidebar-collapse') {
+      $('#sidebarCollapsed').css('display', 'none')
+    } else {
+      $('#sidebarCollapsed').css('display', 'block')
+    }
+    */
+    
+    if ($('body')[0].className === 'skin-blue sidebar-mini sidebar-open') {
+      $('#sidebarCollapsed').css('display', 'block')
+    } else if ($('body')[0].className != 'skin-blue sidebar-mini sidebar-collapse') {
       $('#sidebarCollapsed').css('display', 'none')
     } else {
       $('#sidebarCollapsed').css('display', 'block')
@@ -106,7 +117,16 @@ $(document).on('shiny:connected', function(event) {
 sidebar_css <- HTML("
 .sidebar-mini.sidebar-collapse .content-wrapper {
       margin-left: 0px !important;
-}")
+}
+
+/* Hide as much of the title as we can */
+.sidebar-mini.sidebar-collapse .main-header .logo {
+    width: 0px;
+}
+.sidebar-mini.sidebar-collapse .main-header .navbar {
+    margin-left: 0px;
+}
+")
 
 # ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
@@ -270,7 +290,7 @@ body_colwise <- dashboardBody(
 ui <- function(request) {
   dashboardPagePlus(
     header = dashboardHeaderPlus(
-      title = "Resilience Index", titleWidth = "300px",
+      title = "British Red Cross Resilience Index", titleWidth = "350px",
       
       # to add in bookmark button
       tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px"),
@@ -285,8 +305,6 @@ ui <- function(request) {
       
       tags$head(tags$script(sidebar_js)),
       tags$head(tags$style(sidebar_css)),
-      
-      h3("British Red Cross Vulnerability and Resilience Index"),
       
       h4("1. Select type of resilience", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
       
