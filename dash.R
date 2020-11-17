@@ -37,7 +37,7 @@ vi <- read_feather("data/vulnerability-index-msoa-england.feather")
 
 labels <- read_rds("data/la-labels.rds")  # Local Authority labels for map
 
-la_centroids <- read_feather("data/la-centroids.feather")
+# la_centroids <- read_feather("data/la-centroids.feather")
 
 # ---- Data prep ----
 ri_shp <- lad_shp %>% 
@@ -554,8 +554,8 @@ server <- function(input, output, session) {
     labels <-
       paste0(
         sprintf("<strong>%s</strong><br/>", curr_LAs$lad19nm),
-        "Vulnerability quintile: ", curr_LAs$`Vulnerability quintile`, "<br/>",
-        "Resilience quintile: ", curr_LAs$`Capacity quintile`
+        "Vulnerability quintile (5 = highest vulnerability): ", curr_LAs$`Vulnerability quintile`, "<br/>",
+        "Capacity quintile (5 = lowest capacity): ", curr_LAs$`Capacity quintile`
       ) %>%
       lapply(htmltools::HTML)
     
