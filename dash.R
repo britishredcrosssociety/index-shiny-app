@@ -89,6 +89,25 @@ $( document ).ready(function() {
 });
 "
 
+# ---- JS and CSS to fully collapse sidebar ----
+# Source: https://stackoverflow.com/a/53517933
+sidebar_js <- HTML("
+$(document).on('shiny:connected', function(event) {
+  $('.sidebar-toggle').on('click', function() {
+    if ($('body')[0].className != 'skin-blue sidebar-mini sidebar-collapse') {
+      $('#sidebarCollapsed').css('display', 'none')
+    } else {
+      $('#sidebarCollapsed').css('display', 'block')
+    }
+  })
+});
+")
+
+sidebar_css <- HTML("
+.sidebar-mini.sidebar-collapse .content-wrapper {
+      margin-left: 0px !important;
+}")
+
 # ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
 body_colwise <- dashboardBody(
@@ -239,7 +258,8 @@ body_colwise <- dashboardBody(
 ui <- function(request) {
   dashboardPagePlus(
     header = dashboardHeaderPlus(
-      title = "British Red Cross Vulnerability Index", titleWidth = "300px",
+      title = "Resilience Index", titleWidth = "300px",
+      
       # to add in bookmark button
       tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px"),
       
@@ -251,20 +271,10 @@ ui <- function(request) {
     sidebar = dashboardSidebar(
       width = "300px",
       
-      h3("About", style = "padding-left:10px; padding-right:10px;"),
+      tags$head(tags$script(sidebar_js)),
+      tags$head(tags$style(sidebar_css)),
       
-      p(
-        style = "text-align: justify; font-size:12px; color:black; padding-left:10px; padding-right:10px;",
-        "Hello"
-      ),
-      
-      h3("Instructions", style = "padding-left:10px; padding-right:10px;"),
-      
-      p(
-        style = "text-align: justify; font-size:12px; color:black; padding-left:10px; padding-right:10px;",
-        "Use the drop-down boxes below to first select a local authority or primary care network,
-        and then select a domain of vulnerability to show on the map."
-      ),
+      h3("British Red Cross Vulnerability and Resilience Index"),
       
       h4("1. Select type of resilience", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
       
