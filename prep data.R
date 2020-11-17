@@ -95,8 +95,8 @@ write_feather(ri_bivariate, "data/resilience-index.feather")
 labels <-
   paste0(
     sprintf("<strong>%s</strong><br/>", ri_bivariate$LAD19NM),
-    "Vulnerability quintile: ", ri_bivariate$`Vulnerability quintile`, "<br/>",
-    "Resilience quintile: ", ri_bivariate$`Capacity quintile`
+    "Vulnerability quintile (5 = most vulnerable): ", ri_bivariate$`Vulnerability quintile`, "<br/>",
+    "Capacity quintile (5 = lowest capacity): ", ri_bivariate$`Capacity quintile`
   ) %>%
   lapply(htmltools::HTML)
 
