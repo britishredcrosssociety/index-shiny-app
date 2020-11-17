@@ -80,24 +80,34 @@ guide <- Cicerone$
     is_id = FALSE
   )
 
+# Add JavaScript to add an id to the <section> tag so we can overlay waiter on top of it
+# Source: https://waiter.john-coene.com/#/examples?id=shinydashboard
+add_id_to_section <- "
+$( document ).ready(function() {
+  var section = document.getElementsByClassName('content');
+  section[0].setAttribute('id', 'waiter-content');
+});
+"
+
 # ---- UI ----
 # https://community.rstudio.com/t/big-box-beside-4-small-boxes-using-shinydashboard/39489
 body_colwise <- dashboardBody(
+
+  tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+  tags$head(includeCSS("styles.css")),
+  tags$head(tags$script(add_id_to_section)),  # import custom JavaScript for Waiter
+  tags$head(HTML("<title>British Red Cross Vulnerability Index and Resilience Index</title>")),
   
   # - Error and waiting functions to improve UX -
   use_sever(),
   use_waiter(),
-  waiter_show_on_load(html = tagList(
-    spin_5(),
-    div(p("Loading Index"), style = "padding-top:25px;")
-  )),
+  # waiter_show_on_load(html = tagList(
+  #   spin_5(),
+  #   div(p("Loading Index"), style = "padding-top:25px;")
+  # )),
   
   use_cicerone(),
   useShinyjs(),
-  
-  tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-  tags$head(includeCSS("styles.css")),
-  tags$head(HTML("<title>British Red Cross Vulnerability Index and Resilience Index</title>")),
   
   # Load custom theme
   shinyDashboardThemes(
@@ -385,7 +395,8 @@ server <- function(input, output, session) {
   cols_to_format <- reactiveVal()  # list of data table columns to format in `renderDT()`
   
   # Set up a waiter for the map
-  map_waiter <- Waiter$new(id = "map", color = transparent(.5))
+  map_waiter <- Waiter$new(id = "waiter-content")
+  # map_waiter <- Waiter$new(id = "map", color = transparent(.5))
   
   # ---- Draw basemap ----
   # set up the static parts of the map (that don't change as user selects different options)
@@ -523,7 +534,7 @@ server <- function(input, output, session) {
   # ---- Observer for updating map ----
   observe({
     # Debug
-    print(input$sidebarItemExpanded)
+    # print(input$sidebarItemExpanded)
     # print(input$shocks)
     # print(nrow(filteredLAs()))
     # print(selected_polygon())
@@ -594,14 +605,14 @@ server <- function(input, output, session) {
     # If user clicks a Local Authority, zoom to it and show vulnerable MSOAs
     if (!is.null(selected_polygon())) {
       # Get LA centroid for zooming
-      curr_centroid <- la_centroids %>% 
-        filter(lad19cd == selected_polygon())
+      # curr_centroid <- la_centroids %>% 
+      #   filter(lad19cd == selected_polygon())
       
       # Get vulnerable MSOAs for current LA
       vi_curr <- vi_shp %>% 
         filter(LAD19CD == selected_polygon())
       
-      # Get bounding box of current LA
+      # Get bounding box of current LA for zooming
       curr_bbox <- st_bbox(vi_curr)
       
       map <- map %>% 
