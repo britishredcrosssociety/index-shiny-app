@@ -531,18 +531,9 @@ server <- function(input, output, session) {
     updateSelectInput(session, "lad", selected = "All")
   })
   
-  # ---- Observer for updating map ----
-  observe({
-    # Debug
-    # print(input$sidebarItemExpanded)
-    # print(input$shocks)
-    # print(nrow(filteredLAs()))
-    # print(selected_polygon())
-    # print(input$map_shape_click$id)
-    
-    # selected_polygon(clicked_polygon())  # Did user click a polygon on the map?
-    
-    map_waiter$show()
+  observeEvent(input$lad, {
+    # Hide the right-hand sidebar with VI indicators (if it was open)
+    shinyjs::removeClass(selector = "body", class = "control-sidebar-open")
     
     # - Filter based on user-selected LAs from list -
     if (input$lad == "All") {
@@ -553,8 +544,18 @@ server <- function(input, output, session) {
       # update map zoom
       selected_polygon(lad_shp$lad19cd[ lad_shp$lad19nm == input$lad ])
     }
-    
+  })
+  
+  # ---- Observer for updating map ----
+  observe({
+    # Debug
+    # print(input$sidebarItemExpanded)
+    # print(input$shocks)
+    # print(nrow(filteredLAs()))
     # print(selected_polygon())
+    # print(input$map_shape_click$id)
+    
+    map_waiter$show()
     
     # Get selected set of LAs
     curr_LAs <- filteredLAs()
