@@ -68,15 +68,15 @@ guide <- Cicerone$
     is_id = FALSE
   )$
   step(
-    ".fa-chart-pie",
-    "View vulnerability indicators",
-    "After choosing a Local Authority and clicking on a vulnerable neighbourhood, this button will show you the Vulnerability Index indicators.",
-    is_id = FALSE
-  )$
-  step(
     "[data-value='Data']",
     "View the data",
     "Click this tab to see the underlying data rather than a map.",
+    is_id = FALSE
+  )$
+  step(
+    "[data-value='Help']",
+    "Get more information",
+    "Click this tab for help and further information.",
     is_id = FALSE
   )
 
