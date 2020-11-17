@@ -482,7 +482,7 @@ server <- function(input, output, session) {
     leaflet(ri_shp,
             options = leafletOptions(minZoom = 5, maxZoom = 15, attributionControl = F)) %>%
       
-      # setView(lat = 54.00366, lng = -2.547855, zoom = 7) %>% # centre map on Whitendale Hanging Stones, the centre of GB: https://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom
+      setView(lat = 54.00366, lng = -2.547855, zoom = 7) %>% # centre map on Whitendale Hanging Stones, the centre of GB: https://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom
       addProviderTiles(providers$CartoDB.Positron) %>%
       
       # - All LA's -
