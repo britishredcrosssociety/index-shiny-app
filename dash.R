@@ -351,42 +351,80 @@ ui <- function(request) {
     
     # - Right-hand sidebar showing VI underlying indicators -
     rightsidebar = rightSidebar(
-      # background = "dark",
+      background = "light",
+      
       rightSidebarTabContent(
         id = 1,
         title = "Clinical Vulnerability",
         icon = "virus",
-        
+
         active = TRUE,
-        fluidRow(
-          uiOutput("vi_clinical")
-        )
+        uiOutput("vi_clinical")
       ),
-      
+
       rightSidebarTabContent(
         id = 2,
         title = "Health/Wellbeing Vulnerability",
         icon = "stethoscope",
-        
+
         uiOutput("vi_wellbeing")
       ),
-      
+
       rightSidebarTabContent(
         id = 3,
         title = "Economic Vulnerability",
         icon = "pound-sign",
-        
+
         uiOutput("vi_economic")
       ),
-      
+
       rightSidebarTabContent(
         id = 4,
         title = "Social Vulnerability",
         icon = "users",
-        
+
         uiOutput("vi_social")
       )
     ),
+    
+    # controlbar = dashboardControlbar(
+    #   skin = "light",
+    #   
+    #   controlbarMenu(
+    #     id = "menu",
+    #     
+    #     controlbarItem(
+    #       title = "Clinical Vulnerability",
+    #       icon = "virus",
+    #       
+    #       active = TRUE,
+    #       fluidRow(
+    #         uiOutput("vi_clinical")
+    #       )
+    #     ),
+    #     
+    #     controlbarItem(
+    #       title = "Health/Wellbeing Vulnerability",
+    #       icon = "stethoscope",
+    #       
+    #       uiOutput("vi_wellbeing")
+    #     ),
+    #     
+    #     controlbarItem(
+    #       title = "Economic Vulnerability",
+    #       icon = "pound-sign",
+    #       
+    #       uiOutput("vi_economic")
+    #     ),
+    #     
+    #     controlbarItem(
+    #       title = "Social Vulnerability",
+    #       icon = "users",
+    #       
+    #       uiOutput("vi_social")
+    #     )
+    #   )
+    # ),
     
     body_colwise
   )
