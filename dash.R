@@ -137,6 +137,8 @@ body_colwise <- dashboardBody(
                      " capacity. To learn more about the British Red Cross Vulnerability Index and how these scores are calculated,",
                      tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability/", "click here.")
                    ),
+                   downloadButton("downloadVI2", "Download Vulnerability Index data"),
+                   downloadButton("downloadRI2", "Download Resilience Index data"),
                    hr()
                  ),
                  
@@ -162,16 +164,72 @@ body_colwise <- dashboardBody(
                    id = "data-table-row",
                    DTOutput("data")
                  )
+        ),
+        
+        tabPanel("Help", 
+                 icon = icon(name = "question-circle"),
+                 
+                 fluidRow(
+                   id = "help-info",
+                   
+                   h3("About the Resilience Index"),
+                   p(
+                     "The Resilience Index is formed of three parts:", tags$strong("vulnerability"), ",", tags$strong("capacity to cope"), ", and", tags$strong("risk/history of shocks"), "."
+                   ),
+                   downloadButton("downloadVI1", "Download Vulnerability Index data"),
+                   downloadButton("downloadRI1", "Download Resilience Index data"),
+                   br(),
+                   
+                   h4("Vulnerability"),
+                   p("The Vulnerability Index models vulnerability in small neighbourhoods of ~7,000 - 10,000 people in four domains: ",
+                     tags$ul(
+                       tags$li("Clinical vulnerability"),
+                       tags$li("Health and wellbeing vulnerability"),
+                       tags$li("Economic vulnerability"),
+                       tags$li("Social vulnerability")
+                     )
+                   ),
+                   p(
+                     "For more information, see", tags$a(href = "https://docs.google.com/document/d/1aWpzgvLKGEF5Ay_xVps17nnbT1zIEki7RGIIJXL5APo/edit#", "this document"), "."
+                   ),
+                   br(),
+                   
+                   h4("Capacity to cope"),
+                   p("Capacity to cope to shocks such as floods and fires is calculated for Local Authorities, based on the following indicators:",
+                     tags$ul(
+                       tags$li("Local Authority spending power (£m per person) in the current year"),
+                       tags$li("Charities per 1,000 people"),
+                       tags$li("Volunteer capacity"),
+                       tags$li("Community engagement"),
+                       tags$li("Fire and Rescue Service response times")
+                     )
+                   ),
+                   p("Community engagement measures the levels of third sector civic and community activity and barriers to participation and engagement. 
+                     It shows whether charities are active in the area and whether people appear to be engaged in the broader civic life of their community. 
+                     For more information, see", tags$a(href = "https://localtrust.org.uk/insights/research/left-behind-understanding-communities-on-the-edge", "this report")
+                   ),
+                   p("Volunteer capacity measures the ability of the NHS Volunteer Responders and the British Red Cross volunteers to meet demand."),
+                   br(),
+                   
+                   h4("Shocks"),
+                   p("Shocks are events such as disasters that impacts a person or community, and may have large adverse effects on people/communities who are especially vulnerable. 
+                     The Resilience Index includes two kinds of shock: flooding and dwelling fires."
+                   ),
+                   p("Flooding is measured by the proportion of people in a Local Authority who live in high-risk flood zones. 
+                     We have also included data on historical flooding incidents attended by Fire & Rescue Services as a measure of requiring additional support. 
+                     Dwelling fires are measured as the three-year average number of fires per 10,000 people in a Local Authority."
+                   )
+                 )
         )
-      )
-    )
+      ) # tabBox
+    ) # column
   ) # fluidRow
 ) # dashboardBody
 
 ui <- function(request) {
   dashboardPagePlus(
     header = dashboardHeaderPlus(
-      title = "British Red Cross Vulnerability Index", titleWidth = "350px",
+      title = "British Red Cross Vulnerability Index", titleWidth = "300px",
       # to add in bookmark button
       tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px"),
       
@@ -920,6 +978,43 @@ server <- function(input, output, session) {
     
     HTML(paste(str_stats, collapse = "<br/><br/>"))
   })
+  
+  # ---- Download buttons ----
+  # VI download button on help tab
+  output$downloadVI1 <- downloadHandler(
+      filename = "vulnerability-index.csv",
+      
+      content = function(con) {
+        write_csv(vi, con)
+      }
+  )
+  
+  # VI download button on data tab
+  output$downloadVI2 <- downloadHandler(
+    filename = "vulnerability-index.csv",
+    
+    content = function(con) {
+      write_csv(vi, con)
+    }
+  )
+  
+  # RI download button on help tab
+  output$downloadRI1 <- downloadHandler(
+    filename = "resilience-index.csv",
+    
+    content = function(con) {
+      write_csv(ri, con)
+    }
+  )
+  
+  # RI download button on data tab
+  output$downloadRI2 <- downloadHandler(
+    filename = "resilience-index.csv",
+    
+    content = function(con) {
+      write_csv(ri, con)
+    }
+  )
   
   # - Error messages -
   sever()
