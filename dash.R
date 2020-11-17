@@ -242,12 +242,23 @@ body_colwise <- dashboardBody(
                  br(),
                  
                  h4("Shocks"),
-                 p("Shocks are events such as disasters that impacts a person or community, and may have large adverse effects on people/communities who are especially vulnerable. 
+                 p("Shocks are events such as disasters that impact a person or community, and may have large adverse effects on people/communities who are especially vulnerable. 
                    The Resilience Index includes two kinds of shock: flooding and dwelling fires."
                  ),
                  p("Flooding is measured by the proportion of people in a Local Authority who live in high-risk flood zones. 
                    We have also included data on historical flooding incidents attended by Fire & Rescue Services as a measure of requiring additional support. 
                    Dwelling fires are measured as the three-year average number of fires per 10,000 people in a Local Authority."
+                 ),
+                 br(),
+                 
+                 h3("About this app"),
+                 p("The Vulnerability Index, the Resilience Index, and this app were designed and developed by Matt Thomas, Elle Gordon, Mike Page and Freya Neason 
+                   from the Insight & Improvement team at the British Red Cross. If you have any questions, comments or issues, please contact ", tags$a(href="mailto:MattThomas@redcross.org.uk", "Matt")),
+                 p("All our code and as much of our data as possible are all available for free:"),
+                 tags$ul(
+                   tags$li("Vulnerability Index code and data: ", tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability")),
+                   tags$li("Resilience Index code and data: ", tags$a(href = "https://github.com/britishredcrosssociety/resilience-index")),
+                   tags$li("Code for this dashboard: ", tags$a(href = "https://github.com/britishredcrosssociety/index-shiny-app"))
                  )
         ) # tabPanel
         
