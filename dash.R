@@ -205,8 +205,10 @@ body_colwise <- dashboardBody(
                    p(
                      "The Resilience Index is formed of three parts:", tags$strong("vulnerability"), ",", tags$strong("capacity to cope"), ", and", tags$strong("risk/history of shocks"), "."
                    ),
+                   actionButton("guide", "View interactive guide"),
                    downloadButton("downloadVI1", "Download Vulnerability Index data"),
                    downloadButton("downloadRI1", "Download Resilience Index data"),
+                   br(),
                    br(),
                    
                    h4("Vulnerability"),
@@ -1037,6 +1039,11 @@ server <- function(input, output, session) {
       write_csv(ri, con)
     }
   )
+  
+  # ---- Button to (re-)show interactive guide ---- 
+  observeEvent(input$guide, {
+    guide$start()
+  })
   
   # - Error messages -
   sever()
