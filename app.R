@@ -161,7 +161,7 @@ body_colwise <- dashboardBody(
                  
                  absolutePanel(
                    id = "legend", class = "panel panel-default",
-                   top = "auto", bottom = 0, right = "auto", width = 225, fixed = FALSE,
+                   top = "auto", bottom = 50, right = "auto", width = 225, fixed = FALSE,
                    draggable = FALSE, height = "auto",
                    img(src = "bivar-legend.png", width = 300)
                  )
