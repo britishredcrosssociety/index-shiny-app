@@ -35,8 +35,6 @@ vi <- read_feather("data/vulnerability-index-msoa-england.feather")
 
 labels <- read_rds("data/la-labels.rds")  # Local Authority labels for map
 
-# la_centroids <- read_feather("data/la-centroids.feather")
-
 # ---- Data prep ----
 ri_shp <- lad_shp %>% 
   left_join(ri, by = c("lad19cd" = "LAD19CD"))
@@ -140,10 +138,6 @@ body_colwise <- dashboardBody(
   # - Error and waiting functions to improve UX -
   use_sever(),
   use_waiter(),
-  # waiter_show_on_load(html = tagList(
-  #   spin_5(),
-  #   div(p("Loading Index"), style = "padding-top:25px;")
-  # )),
   
   use_cicerone(),
   useShinyjs(),
@@ -154,10 +148,8 @@ body_colwise <- dashboardBody(
   ),
   
   fluidRow(
-    # column(
-      # width = 12,
       tabBox(
-        width = NULL, # height = "960px", 
+        width = NULL,
         side = "right",
         title = "Local Authority Vulnerability and Resilience",
         
@@ -284,7 +276,6 @@ body_colwise <- dashboardBody(
         ) # tabPanel
         
       ) # tabBox
-    #) # column
   ) # fluidRow
 ) # dashboardBody
 
@@ -337,12 +328,12 @@ ui <- function(request) {
         ),
         
         menuItem("Health Inequalities",
-                 icon = icon("stethoscope"), tabName = "health_tab", # badgeLabel = "new", badgeColor = "green",
+                 icon = icon("stethoscope"), tabName = "health_tab",
                  "Health ineqs"
         ),
         
         menuItem("Migration and Displacement",
-                 icon = icon("user"), tabName = "migration_tab", # badgeLabel = "new", badgeColor = "green",
+                 icon = icon("user"), tabName = "migration_tab",
                  "Migration"
         )
       ),
@@ -357,12 +348,6 @@ ui <- function(request) {
                     )
       ),
       
-      # h4("2. Select vulnerability domain", style = "padding-left:10px; padding-right:10px;"),
-      # 
-      # selectInput("vi",
-      #             label = "Type of vulnerability",
-      #             choices = c("Socioeconomic vulnerability", "Clinical vulnerability", "Overall vulnerability")
-      # ),
       br(),
       br(),
       
@@ -374,7 +359,6 @@ ui <- function(request) {
           a(href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", target = "_blank", "Contains public sector information licensed under the Open Government Licence v3.0.")
         ),
         style = "text-align: center;"
-        # style = "position:fixed; bottom:0; padding:10px; text-align: center;"
       )
     ),
     
@@ -444,7 +428,6 @@ server <- function(input, output, session) {
   
   # Set up a waiter for the map
   map_waiter <- Waiter$new(id = "waiter-content")
-  # map_waiter <- Waiter$new(id = "map", color = transparent(.5))
   
   # ---- Draw basemap ----
   # set up the static parts of the map (that don't change as user selects different options)
@@ -455,40 +438,12 @@ server <- function(input, output, session) {
       setView(lat = 54.00366, lng = -2.547855, zoom = 7) %>% # centre map on Whitendale Hanging Stones, the centre of GB: https://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom
       addProviderTiles(providers$CartoDB.Positron) %>%
       
-      # - All LA's -
-      # addPolygons(
-      #   # Use the layerID to observe click-events and update plots
-      #   layerId = ~lad19nm,
-      #   group = "Vulnerability vs. Resilience",
-      #   fillColor = ~fill,
-      #   weight = 0.7,
-      #   opacity = 0.8,
-      #   color = "black",
-      #   dashArray = "0.1",
-      #   fillOpacity = 0.7,
-      #   highlight = highlightOptions(
-      #     weight = 5,
-      #     color = "#666",
-      #     dashArray = "",
-      #     fillOpacity = 0.7,
-      #     bringToFront = TRUE
-      #   ),
-      #   
-      #   label = labels,
-      #   labelOptions = labelOptions(
-      #     style = list("font-weight" = "normal", padding = "3px 8px"),
-      #     textsize = "15px",
-      #     direction = "auto"
-      #   )
-      # ) %>% 
-      
       # Add button to reset zoom
       addEasyButton(easyButton(
         icon = "fa-globe", title = "Reset zoom level",
         onClick = JS("function(btn, map){ map.setZoom(6); }")
       ))
   }
-  #height = exprToFunction(input$dimension[2] *  1/ 2  * 1 / 3)
   )
   
   # ---- Map filters ----
@@ -547,8 +502,7 @@ server <- function(input, output, session) {
       shinyjs::removeClass(selector = "body", class = "control-sidebar-open")
       
     } else if (str_detect(input$map_shape_click$id, "^E02")) {
-      # User selected an MSOA - do nothing
-      # return()
+      # User selected an MSOA - show VI
       selected_msoa(input$map_shape_click$id)
       
       # Show the right-hand sidebar with VI indicators
@@ -610,8 +564,6 @@ server <- function(input, output, session) {
     # Get selected set of LAs
     curr_LAs <- filteredLAs()
     
-    # updateSelectInput(session, "lad", choices = c("All", sort(curr_LAs$lad19nm)), selected = input$lad)
-    
     # Re-create labels, in case user has filtered LAs
     labels <-
       paste0(
@@ -655,10 +607,6 @@ server <- function(input, output, session) {
     
     # If user clicks a Local Authority, zoom to it and show vulnerable MSOAs
     if (!is.null(selected_polygon())) {
-      # Get LA centroid for zooming
-      # curr_centroid <- la_centroids %>% 
-      #   filter(lad19cd == selected_polygon())
-      
       # Get vulnerable MSOAs for current LA
       vi_curr <- vi_shp %>% 
         filter(LAD19CD == selected_polygon())
@@ -714,9 +662,6 @@ server <- function(input, output, session) {
   
   # ---- Data ----
   filteredData <- reactive({
-    # ri_tmp <- ri %>% 
-    #   mutate(`% people in highly vulnerable areas` = paste0(round(`Extent of population living in highly vulnerable areas` * 100, 1), "%"))
-    
     if (is.null(input$sidebarItemExpanded)) {
       cols_to_format(c("Extent of population living in highly vulnerable areas"))
       
@@ -854,12 +799,9 @@ server <- function(input, output, session) {
   output$vi_clinical = renderUI({
     if (is.null(selected_msoa()))
       return("Select a Local Authority then click a neighbourhood to see the underlying indicators.")
-    
-    # str_stats = c()  # the string to build in this function
 
     # Get vulnerable MSOAs for current LA
     vi_curr <- vi %>% 
-      # filter(Code == "E02000001")
       filter(Code == selected_msoa())
     
     str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
