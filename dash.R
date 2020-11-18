@@ -370,10 +370,8 @@ ui <- function(request) {
       ),
       
       br(),
-      br(),
       
       div(
-        p("Developed by"),
         img(src = "brc-logo.jpg", width = 225),
         p(
           style = "font-size:7px; color:black;",

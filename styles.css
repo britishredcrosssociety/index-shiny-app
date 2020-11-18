@@ -61,3 +61,7 @@ h1, h2, h3, h4 { font-weight: 400; }
 #data-info {
   padding:20px 20px 5px 20px;
 }
+
+.sidebar .shiny-input-container {
+    padding-top: 1px !important;
+}
