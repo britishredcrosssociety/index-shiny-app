@@ -151,7 +151,7 @@ body_colwise <- dashboardBody(
       tabBox(
         width = NULL,
         side = "right",
-        title = "Local Authority Vulnerability and Resilience",
+        title = "Local Authority Resilience and Capacity",
         
         tabPanel("Map", 
                  id = "map-tab",
