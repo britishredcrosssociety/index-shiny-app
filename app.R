@@ -286,7 +286,8 @@ body_colwise <- dashboardBody(
 ui <- function(request) {
   dashboardPagePlus(
     header = dashboardHeaderPlus(
-      title = "British Red Cross Resilience Index", titleWidth = "350px",
+      title = "BRC Resilience Index", 
+      titleWidth = "300px",
       
       # to add in bookmark button
       tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px"),
@@ -301,6 +302,8 @@ ui <- function(request) {
       
       tags$head(tags$script(sidebar_js)),
       tags$head(tags$style(sidebar_css)),
+      
+      br(),
       
       h4("1. Select type of resilience", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
       
