@@ -151,7 +151,7 @@ body_colwise <- dashboardBody(
       tabBox(
         width = NULL,
         side = "right",
-        title = "Local Authority Resilience and Capacity",
+        title = NULL,
         
         tabPanel("Map", 
                  id = "map-tab",
@@ -377,7 +377,7 @@ ui <- function(request) {
           style = "font-size:7px; color:black;",
           a(href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", target = "_blank", "Contains public sector information licensed under the Open Government Licence v3.0.")
         ),
-        style = "text-align: center;"
+        style = "position:fixed; bottom:0; padding:10px; text-align: center;"
       )
     ),
     
