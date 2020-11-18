@@ -388,7 +388,9 @@ ui <- function(request) {
         icon = "virus",
 
         active = TRUE,
-        uiOutput("vi_clinical")
+        div(style = 'overflow-y:scroll; height: calc(100vh - 200px) !important;',
+          uiOutput("vi_clinical")
+        )
       ),
 
       rightSidebarTabContent(
@@ -396,7 +398,9 @@ ui <- function(request) {
         title = "Health/Wellbeing Vulnerability",
         icon = "stethoscope",
 
-        uiOutput("vi_wellbeing")
+        div(style = 'overflow-y:scroll; height: calc(100vh - 200px) !important;',
+          uiOutput("vi_wellbeing")
+        )
       ),
 
       rightSidebarTabContent(
@@ -404,7 +408,9 @@ ui <- function(request) {
         title = "Economic Vulnerability",
         icon = "pound-sign",
 
-        uiOutput("vi_economic")
+        div(style = 'overflow-y:scroll; height: calc(100vh - 200px) !important;',
+          uiOutput("vi_economic")
+        )
       ),
 
       rightSidebarTabContent(
@@ -412,48 +418,11 @@ ui <- function(request) {
         title = "Social Vulnerability",
         icon = "users",
 
-        uiOutput("vi_social")
+        div(style = 'overflow-y:scroll; height: calc(100vh - 200px) !important;',
+          uiOutput("vi_social")
+        )
       )
     ),
-    
-    # controlbar = dashboardControlbar(
-    #   skin = "light",
-    #   
-    #   controlbarMenu(
-    #     id = "menu",
-    #     
-    #     controlbarItem(
-    #       title = "Clinical Vulnerability",
-    #       icon = "virus",
-    #       
-    #       active = TRUE,
-    #       fluidRow(
-    #         uiOutput("vi_clinical")
-    #       )
-    #     ),
-    #     
-    #     controlbarItem(
-    #       title = "Health/Wellbeing Vulnerability",
-    #       icon = "stethoscope",
-    #       
-    #       uiOutput("vi_wellbeing")
-    #     ),
-    #     
-    #     controlbarItem(
-    #       title = "Economic Vulnerability",
-    #       icon = "pound-sign",
-    #       
-    #       uiOutput("vi_economic")
-    #     ),
-    #     
-    #     controlbarItem(
-    #       title = "Social Vulnerability",
-    #       icon = "users",
-    #       
-    #       uiOutput("vi_social")
-    #     )
-    #   )
-    # ),
     
     body_colwise
   )
