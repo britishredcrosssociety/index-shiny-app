@@ -60,7 +60,7 @@ guide <- Cicerone$
   step(
     ".lad-select",
     "Select Local Authorities",
-    "Use this box to choose or search for Local Authorities. You can also click Local Authorities on the map to see more details, include their vulnerable neighbourhoods.",
+    "Use this box to choose or search for Local Authorities. You can also click Local Authorities on the map to see more details, including their vulnerable neighbourhoods.",
     is_id = FALSE
   )$
   step(
