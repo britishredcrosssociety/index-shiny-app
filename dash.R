@@ -131,7 +131,7 @@ sidebar_css <- HTML("
 body_colwise <- dashboardBody(
 
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-  tags$style(type = "text/css", "#map {height: calc(100vh - 80px) !important;}"),
+  tags$style(type = "text/css", "#map {height: calc(100vh - 200px) !important;}"),
   
   tags$head(includeCSS("styles.css")),
   tags$head(tags$script(add_id_to_section)),  # import custom JavaScript for Waiter
@@ -165,7 +165,6 @@ body_colwise <- dashboardBody(
                  id = "map-tab",
                  icon = icon(name = "globe"),
                  
-                 #div(class = "map-tab",
                  leafletOutput("map", height = "100%"), #, height = "890px"),
                  
                  absolutePanel(
@@ -174,7 +173,6 @@ body_colwise <- dashboardBody(
                    draggable = FALSE, height = "auto",
                    img(src = "bivar-legend.png", width = 300)
                  )
-                 #)
         ),
         
         tabPanel("Data", 
