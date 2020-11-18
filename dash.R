@@ -364,8 +364,8 @@ ui <- function(request) {
       div(class = "lad-select",  # use this <div> for help guide
         selectInput("lad",
                     label = "Choose a Local Authority",
-                    choices = c("All", sort(lad_shp$lad19nm)),
-                    selected = "All"
+                    choices = c("- Show all Local Authorities -", sort(lad_shp$lad19nm)),
+                    selected = "- Show all Local Authorities -"
                     )
       ),
       
@@ -545,15 +545,15 @@ server <- function(input, output, session) {
   
   # ---- Reset view if user changes disasters/shocks ----
   observeEvent(input$shocks, {
-    updateSelectInput(session, "lad", selected = "All")
+    updateSelectInput(session, "lad", selected = "- Show all Local Authorities -")
   })
   
   observeEvent(input$highest_flood_risks, {
-    updateSelectInput(session, "lad", selected = "All")
+    updateSelectInput(session, "lad", selected = "- Show all Local Authorities -")
   })
   
   observeEvent(input$flood_incidents, {
-    updateSelectInput(session, "lad", selected = "All")
+    updateSelectInput(session, "lad", selected = "- Show all Local Authorities -")
   })
   
   observeEvent(input$lad, {
@@ -561,7 +561,7 @@ server <- function(input, output, session) {
     shinyjs::removeClass(selector = "body", class = "control-sidebar-open")
     
     # - Filter based on user-selected LAs from list -
-    if (input$lad == "All") {
+    if (input$lad == "- Show all Local Authorities -") {
       # Deselect LAs
       selected_polygon(NULL)
       
