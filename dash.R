@@ -390,7 +390,7 @@ ui <- function(request) {
       rightSidebarTabContent(
         id = 1,
         title = "Clinical Vulnerability",
-        icon = "virus",
+        icon = "stethoscope",
 
         active = TRUE,
         div(style = 'overflow-y:scroll; height: calc(100vh - 200px) !important;',
@@ -401,7 +401,7 @@ ui <- function(request) {
       rightSidebarTabContent(
         id = 2,
         title = "Health/Wellbeing Vulnerability",
-        icon = "stethoscope",
+        icon = "heartbeat",
 
         div(style = 'overflow-y:scroll; height: calc(100vh - 200px) !important;',
           uiOutput("vi_wellbeing")
