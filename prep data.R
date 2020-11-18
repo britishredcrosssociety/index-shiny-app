@@ -10,10 +10,15 @@ ri <- read_csv("https://github.com/britishredcrosssociety/resilience-index/raw/m
 # ---- Vulnerability Index ----
 vi <- read_csv("https://github.com/britishredcrosssociety/covid-19-vulnerability/raw/master/output/vulnerability-MSOA-England.csv")
 
+# Neater versions of MSOA names
+msoa_names = read_csv("https://visual.parliament.uk/msoanames/static/MSOA-Names-1.7.csv") %>% 
+  select(MSOA11CD = msoa11cd, Name_clean = msoa11hclnm)
+
 # Lookup MSOAs to LAs
 msoa_lad <- read_csv("https://github.com/britishredcrosssociety/covid-19-vulnerability/raw/master/data/lookup%20mosa11%20to%20lad17%20to%20lad19%20to%20tactical%20cell.csv")
 
 vi <- vi %>% 
+  left_join(msoa_names, by = c("Code" = "MSOA11CD")) %>% 
   left_join(msoa_lad %>% select(-LAD17CD),
             by = c("Code" = "MSOA11CD"))
 

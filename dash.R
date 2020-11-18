@@ -825,7 +825,7 @@ server <- function(input, output, session) {
     vi_curr <- vi %>% 
       filter(Code == selected_msoa())
     
-    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    str_stats = paste0("<strong>", vi_curr$Name_clean, "</strong>")
 
     if (!is.na(vi_curr$`Modelled prevalence of people aged 15 who are regular smokers Rate`))
         str_stats = c(str_stats, paste0("Smoking prevalence: ", round(vi_curr$`Modelled prevalence of people aged 15 who are regular smokers Rate`, 2), "<br/>(England average: ", round(mean(vi$`Modelled prevalence of people aged 15 who are regular smokers Rate`, na.rm = TRUE), 2), ")"))
@@ -881,7 +881,7 @@ server <- function(input, output, session) {
     vi_curr <- vi %>% 
       filter(Code == selected_msoa())
     
-    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    str_stats = paste0("<strong>", vi_curr$Name_clean, "</strong>")
     
     if (!is.na(vi_curr$`Dementia prevalence Rate`))
       str_stats = c(str_stats, paste0("Dementia prevalence: ", round(vi_curr$`Dementia prevalence Rate`, 2), "<br/>(England average: ", round(mean(vi$`Dementia prevalence Rate`, na.rm = TRUE), 2), ")"))
@@ -916,7 +916,7 @@ server <- function(input, output, session) {
     vi_curr <- vi %>% 
       filter(Code == selected_msoa())
     
-    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    str_stats = paste0("<strong>", vi_curr$Name_clean, "</strong>")
     
     if (!is.na(vi_curr$`Older people social care benefit (Attendance Allowance) Rate`))
       str_stats = c(str_stats, paste0("Older people social care benefit: ", round(vi_curr$`Older people social care benefit (Attendance Allowance) Rate`, 2), "%<br/>(England average: ", round(mean(vi$`Older people social care benefit (Attendance Allowance) Rate`, na.rm = TRUE), 2), "%)"))
@@ -966,7 +966,7 @@ server <- function(input, output, session) {
     vi_curr <- vi %>% 
       filter(Code == selected_msoa())
     
-    str_stats = paste0("<strong>", vi_curr$Name, "</strong>")
+    str_stats = paste0("<strong>", vi_curr$Name_clean, "</strong>")
     
     if (!is.na(vi_curr$`Longest distance to supermarket (km)`))
       str_stats = c(str_stats, paste0("Distance to supermarket: ", round(vi_curr$`Longest distance to supermarket (km)`, 2), "km<br/>(England average: ", round(mean(vi$`Longest distance to supermarket (km)`, na.rm = TRUE), 2), "km)"))
