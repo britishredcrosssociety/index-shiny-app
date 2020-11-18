@@ -131,6 +131,8 @@ sidebar_css <- HTML("
 body_colwise <- dashboardBody(
 
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+  tags$style(type = "text/css", "#map {height: calc(100vh - 80px) !important;}"),
+  
   tags$head(includeCSS("styles.css")),
   tags$head(tags$script(add_id_to_section)),  # import custom JavaScript for Waiter
   tags$head(HTML("<title>British Red Cross Vulnerability Index and Resilience Index</title>")),
@@ -152,24 +154,27 @@ body_colwise <- dashboardBody(
   ),
   
   fluidRow(
-    column(
-      width = 12,
+    # column(
+      # width = 12,
       tabBox(
-        width = NULL, height = "960px", side = "right",
+        width = NULL, # height = "960px", 
+        side = "right",
         title = "Local Authority Vulnerability and Resilience",
         
         tabPanel("Map", 
                  id = "map-tab",
                  icon = icon(name = "globe"),
                  
-                 leafletOutput("map", height = "890px"),
+                 #div(class = "map-tab",
+                 leafletOutput("map", height = "100%"), #, height = "890px"),
                  
                  absolutePanel(
                    id = "legend", class = "panel panel-default",
-                   top = "auto", left = 25, bottom = 0, right = "auto", width = 225, fixed = FALSE,
+                   top = "auto", bottom = 0, right = "auto", width = 225, fixed = FALSE,
                    draggable = FALSE, height = "auto",
                    img(src = "bivar-legend.png", width = 300)
                  )
+                 #)
         ),
         
         tabPanel("Data", 
@@ -281,7 +286,7 @@ body_colwise <- dashboardBody(
         ) # tabPanel
         
       ) # tabBox
-    ) # column
+    #) # column
   ) # fluidRow
 ) # dashboardBody
 
@@ -515,7 +520,9 @@ server <- function(input, output, session) {
         icon = "fa-globe", title = "Reset zoom level",
         onClick = JS("function(btn, map){ map.setZoom(6); }")
       ))
-  })
+  }
+  #height = exprToFunction(input$dimension[2] *  1/ 2  * 1 / 3)
+  )
   
   # ---- Map filters ----
   filteredLAs <- reactive({
