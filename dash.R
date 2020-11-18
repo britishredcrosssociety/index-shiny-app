@@ -129,7 +129,7 @@ sidebar_css <- HTML("
 body_colwise <- dashboardBody(
 
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-  tags$style(type = "text/css", "#map {height: calc(100vh - 200px) !important;}"),
+  tags$style(type = "text/css", "#map {height: calc(100vh - 200px) !important;}"),  # idea from https://stackoverflow.com/a/36471739
   
   tags$head(includeCSS("styles.css")),
   tags$head(tags$script(add_id_to_section)),  # import custom JavaScript for Waiter
@@ -328,17 +328,34 @@ ui <- function(request) {
                                  label = "Include historical flooding?",
                                  value = FALSE
                                  )
-                 )
+                 ),
+                 hr()
         ),
         
         menuItem("Health Inequalities",
                  icon = icon("stethoscope"), tabName = "health_tab",
-                 "Health ineqs"
+                 
+                 br(),
+                 tags$small(
+                   class = "badge center-block bg-green",
+                   tags$style(type = 'text/css',".badge{min-width: 200px;}"),
+                   "Coming soon"
+                 ),
+                 br(),
+                 hr()
         ),
         
         menuItem("Migration and Displacement",
                  icon = icon("user"), tabName = "migration_tab",
-                 "Migration"
+                 
+                 br(),
+                 tags$small(
+                   class = "badge center-block bg-green",
+                   tags$style(type = 'text/css',".badge{min-width: 200px;}"),
+                   "Coming soon"
+                 ),
+                 br(),
+                 hr()
         )
       ),
       
