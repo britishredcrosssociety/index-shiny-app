@@ -272,9 +272,9 @@ body_colwise <- dashboardBody(
                      from the Insight & Improvement team at the British Red Cross. If you have any questions, comments or issues, please contact ", tags$a(href="mailto:MattThomas@redcross.org.uk", "Matt")),
                    p("All our code and as much of our data as possible are all available for free:"),
                    tags$ul(
-                     tags$li("Vulnerability Index code and data: ", tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability")),
-                     tags$li("Resilience Index code and data: ", tags$a(href = "https://github.com/britishredcrosssociety/resilience-index")),
-                     tags$li("Code for this dashboard: ", tags$a(href = "https://github.com/britishredcrosssociety/index-shiny-app"))
+                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability", "Vulnerability Index code and data")),
+                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/resilience-index", "Resilience Index code and data")),
+                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/index-shiny-app", "Code for this dashboard"))
                    )
                  )
         ) # tabPanel
