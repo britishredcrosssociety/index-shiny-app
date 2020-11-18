@@ -15,8 +15,6 @@ library(shinydashboardPlus)
 library(shinyWidgets)
 library(htmltools)
 library(DT)
-# for plots
-library(echarts4r)
 # Custom error messages and loading screens
 library(sever)
 library(waiter)
