@@ -284,7 +284,7 @@ body_colwise <- dashboardBody(
 ui <- function(request) {
   dashboardPagePlus(
     header = dashboardHeaderPlus(
-      title = "BRC Resilience Index", 
+      title = "Resilience Index", 
       titleWidth = "300px",
       
       # to add in bookmark button
