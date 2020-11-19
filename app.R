@@ -314,7 +314,7 @@ ui <- function(request) {
       
       br(),
       
-      h4("1. Select type of resilience", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
+      h4("1. Select theme", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
       
       sidebarMenu(
         id = "sidebar",
