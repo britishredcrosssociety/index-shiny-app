@@ -40,6 +40,15 @@ ri_shp <- lad_shp %>%
 vi_shp <- msoa_shp %>% 
   left_join(vi, by = c("MSOA11CD" = "Code"))
 
+# Create labels, in case user has filtered LAs
+labels <-
+  paste0(
+    sprintf("<strong>%s</strong><br/>", ri_shp$lad19nm),
+    "Vulnerability quintile (5 = highest vulnerability): ", ri_shp$`Vulnerability quintile`, "<br/>",
+    "Capacity quintile (5 = lowest capacity): ", ri_shp$`Capacity quintile`
+  ) %>%
+  lapply(htmltools::HTML)
+
 # ---- Guided tour of UI ----
 guide <- Cicerone$
   new()$ 
@@ -457,6 +466,33 @@ server <- function(input, output, session) {
       
       setView(lat = 54.00366, lng = -2.547855, zoom = 7) %>% # centre map on Whitendale Hanging Stones, the centre of GB: https://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom
       addProviderTiles(providers$CartoDB.Positron) %>%
+      
+      # Show filtered Local Authorities
+      addPolygons(
+        # Use the layerID to observe click-events and update plots
+        layerId = ~lad19cd,
+        group = "Vulnerability vs. Resilience",
+        fillColor = ~fill,
+        weight = 0.7,
+        opacity = 0.8,
+        color = "black",
+        dashArray = "0.1",
+        fillOpacity = 0.7,
+        highlight = highlightOptions(
+          weight = 5,
+          color = "#666",
+          dashArray = "",
+          fillOpacity = 0.7,
+          bringToFront = TRUE
+        ),
+        
+        label = labels,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto"
+        )
+      ) %>% 
       
       # Add button to reset zoom
       addEasyButton(easyButton(
