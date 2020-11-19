@@ -373,7 +373,7 @@ ui <- function(request) {
       br(),
       
       div(
-        img(src = "brc-logo.jpg", width = 225),
+        a(href = "https://redcross.org.uk", target = "_blank", img(src = "brc-logo.jpg", width = 225)),
         p(
           style = "font-size:7px; color:black;",
           a(href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", target = "_blank", "Contains public sector information licensed under the Open Government Licence v3.0.")
