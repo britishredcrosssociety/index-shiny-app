@@ -33,8 +33,6 @@ msoa_shp <- read_sf("data/msoa.shp")
 ri <- read_feather("data/resilience-index.feather")
 vi <- read_feather("data/vulnerability-index-msoa-england.feather")
 
-labels <- read_rds("data/la-labels.rds")  # Local Authority labels for map
-
 # ---- Data prep ----
 ri_shp <- lad_shp %>% 
   left_join(ri, by = c("lad19cd" = "LAD19CD"))
