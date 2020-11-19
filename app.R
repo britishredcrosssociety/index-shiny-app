@@ -60,7 +60,7 @@ guide <- Cicerone$
   step(
     ".lad-select",
     "Select Local Authorities",
-    "Use this box to choose or search for Local Authorities. You can also click Local Authorities on the map to see more details, include their vulnerable neighbourhoods.",
+    "Use this box to choose or search for Local Authorities. You can also click Local Authorities on the map to see more details, including their vulnerable neighbourhoods.",
     is_id = FALSE
   )$
   step(
@@ -151,7 +151,7 @@ body_colwise <- dashboardBody(
       tabBox(
         width = NULL,
         side = "right",
-        title = "Local Authority Vulnerability and Resilience",
+        title = NULL,
         
         tabPanel("Map", 
                  id = "map-tab",
@@ -161,7 +161,7 @@ body_colwise <- dashboardBody(
                  
                  absolutePanel(
                    id = "legend", class = "panel panel-default",
-                   top = "auto", bottom = 0, right = "auto", width = 225, fixed = FALSE,
+                   top = "auto", bottom = 50, right = "auto", width = 225, fixed = FALSE,
                    draggable = FALSE, height = "auto",
                    img(src = "bivar-legend.png", width = 300)
                  )
@@ -286,7 +286,8 @@ body_colwise <- dashboardBody(
 ui <- function(request) {
   dashboardPagePlus(
     header = dashboardHeaderPlus(
-      title = "British Red Cross Resilience Index", titleWidth = "350px",
+      title = "BRC Resilience Index", 
+      titleWidth = "300px",
       
       # to add in bookmark button
       tags$li(class = "dropdown", bookmarkButton(), style = "padding-top: 8px; padding-bottom: 8px; padding-right: 15px"),
@@ -301,6 +302,8 @@ ui <- function(request) {
       
       tags$head(tags$script(sidebar_js)),
       tags$head(tags$style(sidebar_css)),
+      
+      br(),
       
       h4("1. Select type of resilience", id = "h_resilience", style = "padding-left:10px; padding-right:10px;"),
       
@@ -377,7 +380,7 @@ ui <- function(request) {
           style = "font-size:7px; color:black;",
           a(href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", target = "_blank", "Contains public sector information licensed under the Open Government Licence v3.0.")
         ),
-        style = "text-align: center;"
+        style = "position:fixed; bottom:0; padding:10px; text-align: center;"
       )
     ),
     
