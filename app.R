@@ -140,7 +140,7 @@ body_colwise <- dashboardBody(
   
   tags$head(includeCSS("styles.css")),
   tags$head(tags$script(add_id_to_section)),  # import custom JavaScript for Waiter
-  tags$head(HTML("<title>British Red Cross Vulnerability Index and Resilience Index</title>")),
+  # tags$head(HTML("<title>British Red Cross Vulnerability Index and Resilience Index</title>")),
   
   # - Error and waiting functions to improve UX -
   use_sever(),
@@ -292,6 +292,8 @@ body_colwise <- dashboardBody(
 
 ui <- function(request) {
   dashboardPagePlus(
+    title = "British Red Cross Vulnerability Index and Resilience Index",
+    
     header = dashboardHeaderPlus(
       title = "Resilience Index", 
       titleWidth = "300px",
