@@ -5,9 +5,9 @@ account: britishredcross
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3257237
-bundleId: 3875837
+bundleId: 3880294
 url: https://britishredcross.shinyapps.io/resilience-index/
-when: 1605701819.45542
+when: 1605789255.8991
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData|archive/app.R|archive/prep-data.R
+ignoredFiles: .RData|archive
