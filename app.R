@@ -308,7 +308,7 @@ ui <- function(request) {
       sidebarMenu(
         id = "sidebar",
         menuItem("Disasters and Emergencies",
-                 tabName = "shocks_tab", icon = icon("building"), startExpanded = TRUE,
+                 tabName = "shocks_tab", icon = icon("fire-extinguisher"), startExpanded = TRUE,
                  
                  selectInput("shocks",
                              label = "Filter areas by disaster",
