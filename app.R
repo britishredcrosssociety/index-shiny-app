@@ -176,7 +176,7 @@ body_colwise <- dashboardBody(
                        Scores are given as ranks, quintiles and deciles - in all cases, higher numbers mean", 
                        tags$b("higher"), " vulnerability and a ", tags$b("lower"),
                        " capacity. To learn more about the British Red Cross Vulnerability Index and how these scores are calculated,",
-                       tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability/", "click here.")
+                       tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability/", target = "_blank", "click here.")
                      ),
                      downloadButton("downloadVI2", "Download Vulnerability Index data"),
                      downloadButton("downloadRI2", "Download Resilience Index data"),
@@ -234,7 +234,7 @@ body_colwise <- dashboardBody(
                      )
                    ),
                    p(
-                     "For more information, see", tags$a(href = "https://docs.google.com/document/d/1aWpzgvLKGEF5Ay_xVps17nnbT1zIEki7RGIIJXL5APo/edit#", "this document"), "."
+                     "For more information, see", tags$a(href = "https://docs.google.com/document/d/1aWpzgvLKGEF5Ay_xVps17nnbT1zIEki7RGIIJXL5APo/edit#", target = "_blank", "this document"), "."
                    ),
                    br(),
                    
@@ -270,9 +270,9 @@ body_colwise <- dashboardBody(
                      from the Insight & Improvement team at the British Red Cross. If you have any questions, comments or issues, please contact ", tags$a(href="mailto:MattThomas@redcross.org.uk", "Matt")),
                    p("All our code and as much of our data as possible are all available for free:"),
                    tags$ul(
-                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability", "Vulnerability Index code and data")),
-                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/resilience-index", "Resilience Index code and data")),
-                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/index-shiny-app", "Code for this dashboard"))
+                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability", target = "_blank", "Vulnerability Index code and data")),
+                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/resilience-index", target = "_blank", "Resilience Index code and data")),
+                     tags$li(tags$a(href = "https://github.com/britishredcrosssociety/index-shiny-app", target = "_blank", "Code for this dashboard"))
                    )
                  )
         ) # tabPanel
