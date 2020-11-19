@@ -22,7 +22,7 @@ vi <- vi %>%
   left_join(msoa_lad %>% select(-LAD17CD),
             by = c("Code" = "MSOA11CD"))
 
-write_feather(vi, "data/vulnerability-index-msoa-england.feather")
+write_feather(vi, "data/vulnerability-index-msoa-england.feather", compression = "uncompressed")
 
 # ---- Bivariate Scores ----
 # create 3 buckets for vulnerability and resilience to map to colours
@@ -94,7 +94,7 @@ ggsave(filename = "www/bivar-legend-void.jpg",
        height = 5.21)
 
 # ---- Prep RI ----
-write_feather(ri_bivariate, "data/resilience-index.feather")
+write_feather(ri_bivariate, "data/resilience-index.feather", compression = "uncompressed")
 
 # Create labels for map
 labels <-
