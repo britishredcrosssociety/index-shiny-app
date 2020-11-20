@@ -227,6 +227,9 @@ body_colwise <- dashboardBody(
                    p(
                      "The Resilience Index is formed of three parts:", tags$strong("vulnerability"), ",", tags$strong("capacity to cope"), ", and", tags$strong("risk/history of shocks"), "."
                    ),
+                   p(
+                     "Currently the Resilience Index only includes England. We will add devolved nations in a future release."
+                   ),
                    actionButton("guide", "View interactive guide"),
                    downloadButton("downloadVI1", "Download Vulnerability Index data"),
                    downloadButton("downloadRI1", "Download Resilience Index data"),
