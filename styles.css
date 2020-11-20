@@ -61,3 +61,15 @@ h1, h2, h3, h4 { font-weight: 400; }
 #data-info {
   padding:20px 20px 5px 20px;
 }
+
+.sidebar .shiny-input-container {
+    padding-top: 1px !important;
+}
+
+skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper {
+    background-color: rgb(240,240,240);
+}
+
+.row {
+  padding: 5px 15px 5px 15px;
+}
