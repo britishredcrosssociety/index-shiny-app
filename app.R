@@ -51,11 +51,17 @@ labels <-
 
 # ---- Guided tour of UI ----
 guide <- Cicerone$
-  new()$ 
+  new()$
+  step(
+    "legend",
+    "Resilience Index",
+    "The map shows resilience in Local Authorities. Resilience is a combination of vulnerability, capacity to cope, and exposure to shocks. 
+    <span style = 'color:#3E2948; font-weight:bold;'>Areas coloured mauve</span> are highly vulnerable, with low capacity to cope."
+  )$
   step(
     el = ".sidebar-menu",
-    title = "Choose type of resilience",
-    description = "Click the items here to view resilience to disasters and emergencies, health inequalities, or migration and displacement.",
+    title = "Choose theme",
+    description = "Click the items here to view resilience to <strong>disasters and emergencies</strong>, <strong>health inequalities</strong>, or <strong>migration and displacement</strong>.",
     is_id = FALSE
   )$
   step(
