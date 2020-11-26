@@ -387,7 +387,12 @@ ui <- function(request) {
                     label = "Choose a Local Authority",
                     choices = c("- Show all Local Authorities -", sort(lad_shp$lad19nm)),
                     selected = "- Show all Local Authorities -"
-                    )
+                    ),
+        
+        checkboxInput("filter_least_resilient",
+                      label = "Show only areas with highest vulnerability and lowest capacity?",
+                      value = FALSE
+        )
       ),
       
       br(),
@@ -554,6 +559,12 @@ server <- function(input, output, session) {
       
     } else if (input$sidebarItemExpanded == "MigrationandDisplacement") {
       output_shp <- ri_shp
+    }
+    
+    # - Filter only least resilient areas? -
+    if (input$filter_least_resilient) {
+      output_shp <- output_shp %>% 
+        filter(group == "3 - 3")
     }
     
     output_shp
