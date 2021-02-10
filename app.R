@@ -286,7 +286,7 @@ body_colwise <- dashboardBody(
                    h3("About this app"),
                    p("The Vulnerability Index, the Resilience Index, and this app were designed and developed by Matt Thomas, Elle Gordon, Mike Page and Freya Neason 
                      from the Insight & Improvement team at the British Red Cross. If you have any questions, comments or issues, please contact ", tags$a(href="mailto:MattThomas@redcross.org.uk", "Matt")),
-                   p("All our code and as much of our data as possible are all available for free:"),
+                   p("All our code and as much of our data as possible are all available for free. They can be viewed, alongside our licenses, at:"),
                    tags$ul(
                      tags$li(tags$a(href = "https://github.com/britishredcrosssociety/covid-19-vulnerability", target = "_blank", "Vulnerability Index code and data")),
                      tags$li(tags$a(href = "https://github.com/britishredcrosssociety/resilience-index", target = "_blank", "Resilience Index code and data")),
