@@ -7,6 +7,11 @@ library(arrow)
 # ---- Resilience Index ----
 ri <- read_csv("https://github.com/britishredcrosssociety/resilience-index/raw/main/data/processed/resilience%20index.csv")
 
+# Remove Isles of Scily due to missing data
+ri <- 
+  ri %>% 
+  filter(!str_detect(LAD19NM, "Scilly"))
+
 # ---- Vulnerability Index ----
 vi <- read_csv("https://github.com/britishredcrosssociety/covid-19-vulnerability/raw/master/output/vulnerability-MSOA-England.csv")
 
