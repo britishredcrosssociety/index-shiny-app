@@ -163,7 +163,7 @@ body_colwise <- dashboardBody(
   fluidRow(
       tabBox(
         width = NULL,
-        side = "right",
+        side = "left",
         title = NULL,
         
         tabPanel("Map", 
