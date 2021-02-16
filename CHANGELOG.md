@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2021-02-16
+### Changed
+- Moved 'Map', 'Data' and 'Help' tabs to left hand side of the panel
+
+### Removed
+- Removed Isles of Scilly due to lack of data
+
 ## 2020-11-26
 ### Added
 - New guide step explaining the map legend
