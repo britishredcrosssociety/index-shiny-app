@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 - Removed Isles of Scilly due to lack of data
 
+## 2021-02-10
+### Added
+- Updated license information
+
 ## 2020-11-26
 ### Added
 - New guide step explaining the map legend
