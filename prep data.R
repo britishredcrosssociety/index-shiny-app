@@ -3,6 +3,7 @@
 ##
 library(tidyverse)
 library(arrow)
+library(geographr)
 
 # ---- Resilience Index ----
 ri <- read_csv("https://github.com/britishredcrosssociety/resilience-index/raw/main/data/processed/resilience%20index.csv")
@@ -28,6 +29,11 @@ vi <- vi %>%
             by = c("Code" = "MSOA11CD"))
 
 write_feather(vi, "data/vulnerability-index-msoa-england.feather", compression = "uncompressed")
+
+# ---- Scottish Health Index ----
+health_sco <- read_csv("https://github.com/britishredcrosssociety/resilience-index/raw/main/data/vulnerability/health-inequalities/scotland/index-unweighted-all-indicators.csv")
+
+write_feather(health_sco, "data/health-index-scotland.feather", compression = "uncompressed")
 
 # ---- Bivariate Scores ----
 # create 3 buckets for vulnerability and resilience to map to colours
@@ -112,3 +118,8 @@ labels <-
 
 # write_feather(labels, "data/la-labels.feather")
 write_rds(labels, "data/la-labels.rds")
+
+# ---- Boundaries ----
+geographr::boundaries_lad %>% 
+  filter(str_detect(lad_code, "^S")) %>% 
+  write_sf("data/lad_scotland.shp")

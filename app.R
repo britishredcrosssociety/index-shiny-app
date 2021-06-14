@@ -28,10 +28,13 @@ source("functions.R")
 
 # Boundaries
 lad_shp <- read_sf("data/lad.shp")
+lad_scotland_shp <- read_sf("data/lad_scotland.shp")
 msoa_shp <- read_sf("data/msoa.shp")
 
 ri <- read_feather("data/resilience-index.feather")
 vi <- read_feather("data/vulnerability-index-msoa-england.feather")
+
+health_sco <- read_feather("data/health-index-scotland.feather")
 
 # ---- Data prep ----
 ri_shp <- lad_shp %>% 
@@ -39,6 +42,9 @@ ri_shp <- lad_shp %>%
 
 vi_shp <- msoa_shp %>% 
   left_join(vi, by = c("MSOA11CD" = "Code"))
+
+health_shp <- lad_scotland_shp %>% 
+  left_join(health_sco, by = "lad_code")
 
 # Create labels, in case user has filtered LAs
 labels <-
